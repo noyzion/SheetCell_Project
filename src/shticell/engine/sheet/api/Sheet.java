@@ -1,6 +1,6 @@
 package shticell.engine.sheet.api;
 
-import shticell.engine.sheet.cell.Cell;
+import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.coordinate.Coordinate;
 
 public interface Sheet {

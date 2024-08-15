@@ -1,7 +1,7 @@
 package shticell.engine.sheet.impl;
 
 import shticell.engine.sheet.api.Sheet;
-import shticell.engine.sheet.cell.Cell;
+import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
 
