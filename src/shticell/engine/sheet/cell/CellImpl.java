@@ -1,6 +1,7 @@
 package shticell.engine.sheet.cell;
 
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,10 +10,19 @@ public class CellImpl implements Cell
 {
     private Object effectiveValue;
     private String originalValue;
-    private Coordinate coordinate;
+    private final Coordinate coordinate;
     private List<Cell> relatedCells = new ArrayList<Cell>();
     private List<Cell> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
+
+    public CellImpl(int row, int column, String originalValue, Object effectiveValue, int version, List<Cell> relatedOn, List<Cell> affectedOn) {
+        this.coordinate = new CoordinateImpl(row, column);
+        this.originalValue = originalValue;
+        this.effectiveValue = effectiveValue;
+        this.lastVersionUpdate = version;
+        this.relatedCells = relatedOn;
+        this.affectedCells = affectedOn;
+    }
 
     @Override
     public Coordinate getCoordinate()

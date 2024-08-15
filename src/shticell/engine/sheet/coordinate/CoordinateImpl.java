@@ -1,6 +1,7 @@
 package shticell.engine.sheet.coordinate;
 
 public class CoordinateImpl implements Coordinate {
+
     private final int row;
     private final int column;
 
