@@ -66,9 +66,9 @@ public class UIManager {
         sheetSpread.addCell(new CellImpl(1, 1, value4, sheetSpread.getVersion(), null, null));
         sheetSpread.addCell(new CellImpl(4, 2, value5, sheetSpread.getVersion(), null, null));
 
-        Coordinate trying = new CoordinateImpl(1,2);
+        Coordinate trying = new CoordinateImpl(4, 2);
         Cell cell = sheetSpread.getCell(trying);
-       System.out.println(cell.getEffectiveValue().getValue());
+        System.out.println(cell);
 
     }
 }

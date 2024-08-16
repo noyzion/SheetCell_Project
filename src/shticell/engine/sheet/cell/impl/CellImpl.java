@@ -16,7 +16,7 @@ public class CellImpl implements Cell {
     private List<Cell> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(int row, int column, String originalValue,int version, List<Cell> relatedOn, List<Cell> affectedOn) {
+    public CellImpl(int row, int column, String originalValue, int version, List<Cell> relatedOn, List<Cell> affectedOn) {
         this.coordinate = new CoordinateImpl(row, column);
         this.originalValue = originalValue;
         this.effectiveValue = new EffectiveValueImp();
@@ -34,7 +34,7 @@ public class CellImpl implements Cell {
     @Override
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
-         effectiveValue.calculateValue(originalValue);
+        effectiveValue.calculateValue(originalValue);
     }
 
     @Override
@@ -82,12 +82,18 @@ public class CellImpl implements Cell {
     @Override
     public String toString() {
         return String.format(
-                "[, effectiveValue=%s, originalValue=%s, lastVersionUpdate=%d, relatedCells=%s, affectedCells=%s]",
-                effectiveValue,
-                originalValue,
+                "Cell coordinates are: %s%n" +
+                        "Effective Value: %s%n" +
+                        "Original Value: %s%n" +
+                        "Last Version Update: %d%n" +
+                        "Related Cells: %s%n" +
+                        "Affected Cells: %s",
+                coordinate != null ? coordinate.toString() : "N/A",
+                effectiveValue != null ? effectiveValue.getValue() : "N/A",
+                originalValue != null ? originalValue : "N/A",
                 lastVersionUpdate,
-                relatedCells != null ? relatedCells.toString() : "[]",
-                affectedCells != null ? affectedCells.toString() : "[]"
+                relatedCells != null && !relatedCells.isEmpty() ? relatedCells.toString() : "[]",
+                affectedCells != null && !affectedCells.isEmpty() ? affectedCells.toString() : "[]"
         );
     }
 }

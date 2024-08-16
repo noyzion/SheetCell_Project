@@ -56,7 +56,6 @@ public class SheetImpl implements Sheet {
     }
 
     public Cell getCell(Coordinate coordinate) {
-        System.out.println(cells.get(coordinate));
         return cells.get(coordinate);
     }
 }

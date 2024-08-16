@@ -23,10 +23,15 @@ public class CoordinateImpl implements Coordinate {
     }
 
     @Override
+    public String toString() {
+        return String.format("row = %d, column = %d", row, column);
+    }
+
+    @Override
   public boolean equals(Object obj) {
         if (obj instanceof Coordinate) {
             Coordinate c = (Coordinate) obj;
-            if(c.getRow() == this.getRow() && c.getColumn() == this.getColumn()) {
+            if (c.getRow() == this.getRow() && c.getColumn() == this.getColumn()) {
                 return true;
             }
         }
@@ -40,6 +45,7 @@ public class CoordinateImpl implements Coordinate {
         result = 31 * result + column;
         return result;
     }
+
 }
 
 
