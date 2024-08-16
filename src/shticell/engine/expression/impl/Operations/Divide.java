@@ -15,7 +15,18 @@ public class Divide extends BinaryExpression {
     }
 
     @Override
-    protected Object evaluate(Object e1, Object e2) throws NumberFormatException {
-        return (Double) e1 / (Double) e2;
+    protected Object evaluate(Object e1, Object e2) {
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Invalid argument types for division.");
+        }
+
+        double numerator = (Double) e1;
+        double denominator = (Double) e2;
+
+        if (denominator == 0) {
+            return Double.NaN; // Return NaN for division by zero
+        }
+
+        return numerator / denominator;
     }
 }

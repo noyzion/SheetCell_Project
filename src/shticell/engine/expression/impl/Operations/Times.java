@@ -14,7 +14,14 @@ public class Times extends BinaryExpression {
     }
 
     @Override
-    protected Object evaluate(Object e1, Object e2) throws NumberFormatException {
-        return (Double) e1 * (Double) e2;
+    protected Object evaluate(Object e1, Object e2) {
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Argument must be numeric.");
+        }
+
+        double num1 = (Double) e1;
+        double num2 = (Double) e2;
+
+        return num1 * num2;
     }
 }

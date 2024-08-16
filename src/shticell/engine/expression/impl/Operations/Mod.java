@@ -15,7 +15,18 @@ public class Mod extends BinaryExpression {
     }
 
     @Override
-    protected Object evaluate(Object e1, Object e2) throws NumberFormatException {
-        return (Double) e1 % (Double) e2;
+    protected Object evaluate(Object e1, Object e2) {
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Argument must be numeric.");
+        }
+
+        double numerator = (Double) e1;
+        double denominator = (Double) e2;
+
+        if (denominator == 0) {
+            return Double.NaN; // Return NaN for modulus by zero
+        }
+
+        return numerator % denominator;
     }
 }

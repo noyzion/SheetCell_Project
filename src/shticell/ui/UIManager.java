@@ -1,6 +1,7 @@
 package shticell.ui;
 
 import shticell.engine.sheet.api.Sheet;
+import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.impl.SheetImpl;
 
 import java.util.Scanner;
@@ -50,6 +51,8 @@ public class UIManager {
 
     public void start() {
 
+        Sheet sheetspread = new SheetImpl("First Sheet");
+        sheetspread.addCell();
 
     }
 }

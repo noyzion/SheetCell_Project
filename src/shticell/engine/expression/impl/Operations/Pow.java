@@ -14,7 +14,18 @@ public class Pow extends BinaryExpression {
     }
 
     @Override
-    protected Object evaluate(Object e1, Object e2) throws NumberFormatException {
-        return Math.pow((Double) e1, (Double) e2);
+    protected Object evaluate(Object e1, Object e2) {
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Invalid argument types for power operation.");
+        }
+
+        double base = (Double) e1;
+        double exponent = (Double) e2;
+
+        if (base == 0 && exponent < 0) {
+            return Double.NaN;
+        }
+
+        return Math.pow(base, exponent);
     }
 }

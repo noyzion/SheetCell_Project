@@ -15,7 +15,14 @@ public class Abs extends UnaryExpression {
     }
 
     @Override
-    protected Object evaluate(Object e1) throws NumberFormatException {
-        return Math.abs((Double) e1);
+    protected Object evaluate(Object e1) {
+        if (!(e1 instanceof Double)) {
+            throw new IllegalArgumentException("Argument must be numeric.");
+        }
+
+        double num = (Double) e1;
+
+        // Perform absolute value calculation
+        return Math.abs(num);
     }
 }
