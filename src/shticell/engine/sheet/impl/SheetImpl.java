@@ -12,11 +12,25 @@ public class SheetImpl implements Sheet {
     private Map<Coordinate, Cell> cells = new HashMap<Coordinate, Cell>();
     private final String sheetName;
     private int version;
+    private final int rowSize;
+    private final int columnSize;
 
-    public SheetImpl(String sheetName) {
+    public SheetImpl(String sheetName, int rowSize, int columnSize) {
         this.sheetName = sheetName;
         this.version = 1;
         this.cells = new HashMap<Coordinate, Cell>();
+        this.rowSize = rowSize;
+        this.columnSize = columnSize;
+    }
+
+    @Override
+    public int getRowSize() {
+        return rowSize;
+    }
+
+    @Override
+    public int getColSize() {
+        return columnSize;
     }
 
     @Override
@@ -42,6 +56,7 @@ public class SheetImpl implements Sheet {
     }
 
     public Cell getCell(Coordinate coordinate) {
+        System.out.println(cells.get(coordinate));
         return cells.get(coordinate);
     }
 }

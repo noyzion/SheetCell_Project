@@ -16,11 +16,12 @@ public class CellImpl implements Cell {
     private List<Cell> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(int row, int column, String originalValue, EffectiveValue effectiveValue, int version, List<Cell> relatedOn, List<Cell> affectedOn) {
+    public CellImpl(int row, int column, String originalValue,int version, List<Cell> relatedOn, List<Cell> affectedOn) {
         this.coordinate = new CoordinateImpl(row, column);
         this.originalValue = originalValue;
-        this.effectiveValue = effectiveValue;
-        this.lastVersionUpdate = version;
+        this.effectiveValue = new EffectiveValueImp();
+        this.effectiveValue.calculateValue(originalValue);
+        this.lastVersionUpdate = 1;
         this.relatedCells = relatedOn;
         this.affectedCells = affectedOn;
     }

@@ -1,15 +1,16 @@
 package shticell.ui;
 
 import shticell.engine.sheet.api.Sheet;
+import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
+import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateImpl;
 import shticell.engine.sheet.impl.SheetImpl;
 
 import java.util.Scanner;
 
 public class UIManager {
 
-    private final int mainMenuRange = 6;
-    private final Sheet sheet = new SheetImpl("FirstSheet");
 
     public void printMenu() {
         System.out.println("(1) Read File");
@@ -51,8 +52,23 @@ public class UIManager {
 
     public void start() {
 
-        Sheet sheetspread = new SheetImpl("First Sheet");
-        sheetspread.addCell();
+
+        String value1 = "500";
+        String value2 = "{PLUS,5,4}";
+        String value3 = "HELLO";
+        String value4 = "{TIMES,{POW,10,5},{MINUS,3,1}}";
+        String value5 = "{CONCAT,NO,YES}";
+
+        Sheet sheetSpread = new SheetImpl("FirstSheet", 5, 5);
+        sheetSpread.addCell(new CellImpl(1, 2, value1, sheetSpread.getVersion(), null, null));
+        sheetSpread.addCell(new CellImpl(2, 2, value2, sheetSpread.getVersion(), null, null));
+        sheetSpread.addCell(new CellImpl(3, 2, value3, sheetSpread.getVersion(), null, null));
+        sheetSpread.addCell(new CellImpl(1, 1, value4, sheetSpread.getVersion(), null, null));
+        sheetSpread.addCell(new CellImpl(4, 2, value5, sheetSpread.getVersion(), null, null));
+
+        Coordinate trying = new CoordinateImpl(1,2);
+        Cell cell = sheetSpread.getCell(trying);
+       System.out.println(cell.getEffectiveValue().getValue());
 
     }
 }

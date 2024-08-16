@@ -29,13 +29,13 @@ public class Sub extends TrinaryExpression {
         int endIndex = ((Double) evaluate3).intValue();
 
         if (startIndex < 0 || startIndex > str.length() || endIndex < startIndex || endIndex > str.length()) {
-            return "!UNDEFINED!"; // Return undefined for invalid substring indices
+            return "!UNDEFINED!";
         }
 
         try {
             return str.substring(startIndex, endIndex);
         } catch (IndexOutOfBoundsException e) {
-            return "!UNDEFINED!"; // Return undefined for any unexpected index issues
+            return "!UNDEFINED!";
         }
     }
 }

@@ -1,7 +1,9 @@
 package shticell.engine.sheet.cell.impl;
 
 import shticell.engine.expression.api.Expression;
+import shticell.engine.expression.impl.NumberExpression;
 import shticell.engine.expression.impl.Operations.*;
+import shticell.engine.expression.impl.StringExpression;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 
@@ -13,6 +15,9 @@ public class EffectiveValueImp implements EffectiveValue {
     private CellType cellType;
     private Object value;
 
+    public EffectiveValueImp()
+    {
+    }
     public EffectiveValueImp(CellType cellType, Object value) {
         this.cellType = cellType;
         this.value = value;
@@ -44,79 +49,95 @@ public class EffectiveValueImp implements EffectiveValue {
         if (originalValue.isEmpty()) {
             this.value = null;
         } else if (originalValue.startsWith("{")) {
-            this.value = stringToExpression(originalValue);
+            stringToExpression(originalValue);
             this.cellType = CellType.EXPRESSION;
         } else {
             numOrString(originalValue);
         }
     }
 
-    private Expression stringToExpression(String value) {
-        char firstChar = value.charAt(0);
-        if (firstChar != '{') {
-            throw new IllegalArgumentException("Invalid expression format: " + value);
+    private String[] stringTrimer(String input) {
+        // Remove the outer braces if present
+        if (input.startsWith("{") && input.endsWith("}")) {
+            input = input.substring(1, input.length() - 1).trim();
         }
 
-        int countOpenBraces = 0;
         List<String> result = new ArrayList<>();
-        StringBuilder currentExpression = new StringBuilder();
+        StringBuilder currentElement = new StringBuilder();
+        boolean insideBraces = false;
+        int openBrackets = 0;
 
-        for (int i = 1; i < value.length(); i++) {
-            char c = value.charAt(i);
+        // Parse the input to separate the operator and arguments
+        for (char c : input.toCharArray()) {
             if (c == '{') {
-                countOpenBraces++;
+                insideBraces = true;
+                openBrackets++;
             } else if (c == '}') {
-                countOpenBraces--;
-                if (countOpenBraces == 0) {
-                    result.add(currentExpression.toString());
-                    currentExpression.setLength(0); // Clear currentExpression for next part
-                    break;
+                openBrackets--;
+                if (openBrackets == 0) {
+                    insideBraces = false;
                 }
             }
-            currentExpression.append(c);
+
+            if (c == ',' && !insideBraces) {
+                result.add(currentElement.toString().trim());
+                currentElement.setLength(0); // Clear the current element
+            } else {
+                currentElement.append(c);
+            }
+        }
+        result.add(currentElement.toString().trim()); // Add the last element
+
+        String operator = result.remove(0);
+
+        // Convert to array
+        String[] operatorAndArgs = new String[result.size() + 1];
+        operatorAndArgs[0] = operator;
+        for (int i = 0; i < result.size(); i++) {
+            operatorAndArgs[i + 1] = result.get(i);
         }
 
-        if (countOpenBraces != 0) {
-            throw new IllegalArgumentException("Mismatched braces in input: " + value);
-        }
-
-        return createExpressionFromResult(result);
+        return operatorAndArgs;
     }
 
+    private Expression createExpression(String[] expression) {
+        String operator = expression[0];
+        List<Expression> args = new ArrayList<>();
 
-    private Expression createExpressionFromResult(List<String> result) {
-        if (result.isEmpty()) {
-            throw new IllegalArgumentException("Empty expression result.");
+        for (int i = 1; i < expression.length; i++) {
+            args.add(stringToExpression(expression[i]));
         }
+        Expression res;
 
-        String operator = result.get(0);
-        List<Expression> args = parseArguments(result);
-
-        return createExpressionFromOperator(operator, args);
-    }
-
-    private Expression createExpressionFromOperator(String operator, List<Expression> args) {
-        return switch (operator) {
-            case "PLUS" -> new Plus(args.get(0), args.get(1));
-            case "MINUS" -> new Minus(args.get(0), args.get(1));
-            case "TIMES" -> new Times(args.get(0), args.get(1));
-            case "DIVIDE" -> new Divide(args.get(0), args.get(1));
-            case "MOD" -> new Mod(args.get(0), args.get(1));
-            case "POW" -> new Pow(args.get(0), args.get(1));
-            case "ABS" -> new Abs(args.get(0));
-            case "CONCAT" -> new Concat(args.get(0), args.get(1));
-            case "SUB" -> new Sub(args.get(0), args.get(1), args.get(2));
-            case "REF" -> new Ref(args.get(0));
+        switch (operator) {
+            case "PLUS" -> res = new Plus(args.get(0), args.get(1));
+            case "MINUS" -> res = new Minus(args.get(0), args.get(1));
+            case "TIMES" -> res = new Times(args.get(0), args.get(1));
+            case "DIVIDE" -> res = new Divide(args.get(0), args.get(1));
+            case "MOD" -> res = new Mod(args.get(0), args.get(1));
+            case "POW" -> res = new Pow(args.get(0), args.get(1));
+            case "ABS" -> res = new Abs(args.get(0));
+            case "CONCAT" -> res = new Concat(args.get(0), args.get(1));
+            case "SUB" -> res = new Sub(args.get(0), args.get(1), args.get(2));
+            case "REF" -> res = new Ref(args.get(0));
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
         };
+
+        this.value = res.evaluate();
+        return res;
     }
 
-    private List<Expression> parseArguments(List<String> result) {
-        List<Expression> args = new ArrayList<>();
-        for (int i = 1; i < result.size(); i++) {
-            args.add(stringToExpression(result.get(i)));
+    private Expression stringToExpression(String input) {
+
+        if (input.startsWith("{") && input.endsWith("}")) {
+            return createExpression(stringTrimer(input));
+        } else {
+            try {
+                return new NumberExpression(Double.parseDouble(input));
+            } catch (NumberFormatException e) {
+                return new StringExpression(input);
+            }
         }
-        return args;
     }
 
     private void numOrString(String value) {

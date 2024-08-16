@@ -6,9 +6,16 @@ import shticell.engine.sheet.coordinate.Coordinate;
 public interface Sheet {
 
     public void setVersion(int version);
+
     public int getVersion();
+
     public String getSheetName();
+
     public void addCell(Cell newCell);
+
     public Cell getCell(Coordinate coordinate);
 
+    public int getRowSize();
+
+    public int getColSize();
 }
