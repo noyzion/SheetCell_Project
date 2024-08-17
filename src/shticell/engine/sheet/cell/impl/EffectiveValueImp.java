@@ -7,6 +7,7 @@ import shticell.engine.expression.impl.StringExpression;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
+import shticell.engine.sheet.coordinate.Coordinate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,13 +16,11 @@ import java.util.List;
 public class EffectiveValueImp implements EffectiveValue {
     private CellType cellType;
     private Object value;
+    private String expressionName;
+    private Coordinate coordinate;
 
-    public EffectiveValueImp()
-    {
-    }
-    public EffectiveValueImp(CellType cellType, Object value) {
-        this.cellType = cellType;
-        this.value = value;
+    public EffectiveValueImp(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 
     @Override
@@ -34,7 +33,11 @@ public class EffectiveValueImp implements EffectiveValue {
         return value;
     }
 
-
+@Override
+public String getExpressionName()
+{
+    return expressionName;
+}
     //TODO!
     @Override
     public <T> T extractValueWithExpectation(Class<T> type) {
@@ -106,7 +109,7 @@ public class EffectiveValueImp implements EffectiveValue {
         List<Expression> args = new ArrayList<>();
 
         for (int i = 1; i < expression.length; i++) {
-            args.add(stringToExpression(sheet,expression[i]));
+            args.add(stringToExpression(sheet, expression[i]));
         }
         Expression res;
 
@@ -120,11 +123,21 @@ public class EffectiveValueImp implements EffectiveValue {
             case "ABS" -> res = new Abs(args.get(0));
             case "CONCAT" -> res = new Concat(args.get(0), args.get(1));
             case "SUB" -> res = new Sub(args.get(0), args.get(1), args.get(2));
-            case "REF" -> res = new Ref(args.get(0),sheet);
+            case "REF" -> res = new Ref(args.get(0), sheet);
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
-        };
+        }
+        ;
 
+
+        this.expressionName = res.getOperationName();
         this.value = res.evaluate();
+
+        if (res instanceof Ref) {
+            Coordinate ref = ((Ref) res).getRefCoordinate();
+            sheet.getCell(coordinate).addCellToRelatedCells(ref);
+            sheet.getCell(ref).addCellToAffectedCells(coordinate);
+        }
+
         return res;
     }
 

@@ -16,13 +16,13 @@ public interface Cell {
 
     public int getVersion();
 
-    public List<Cell> getRelatedCells();
+    public List<Coordinate> getRelatedCells();
 
-    public List<Cell> getAffectedCells();
+    public List<Coordinate> getAffectedCells();
 
-    public void addCellToAffectedCells(Cell cell);
+    public void addCellToAffectedCells(Coordinate coordinate);
 
-    public void addCellToRelatedCells(Cell cell);
+    public void addCellToRelatedCells(Coordinate coordinate);
 
     public void setLastVersionUpdate(int lastVersionUpdate);
 

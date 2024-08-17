@@ -54,26 +54,24 @@ public class UIManager {
 
 
         String value1 = "500";
-        String value2 = "{PLUS,5,4}";
-        String value3 = "HELLO";
-        String value4 = "{TIMES,{POW,10,5},{MINUS,3,1}}";
-        String value5 = "{CONCAT,NO,YES}";
-        String value6 = "{PLUS,{ABS,-1},-1}";
-        String value7 = "{DIVIDE,5,0}";
-        String value8 = "{REF,A1}";
+        String value2 = "{PLUS,{REF,B1},4}"; //504
+        String value3 = "{MINUS, {REF,B2},{REF,B1}}";
+
+        Coordinate coord1 = new CoordinateImpl(1, 2);
+        Coordinate coord2 = new CoordinateImpl(2, 2);
+        Coordinate coord3 = new CoordinateImpl(3, 2);
 
 
         Sheet sheetSpread = new SheetImpl("FirstSheet", 5, 5);
-        sheetSpread.addCell(new CellImpl(1, 2, value1, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(2, 2, value2, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(3, 2, value3, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(1, 1, value4, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(4, 2, value5, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(2, 4, value6, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(1, 3, value7, sheetSpread.getVersion(), sheetSpread));
-        sheetSpread.addCell(new CellImpl(1, 5, value8, sheetSpread.getVersion(), sheetSpread));
+        sheetSpread.addCell(new CellImpl(1, 2, sheetSpread));
+        sheetSpread.getCell(coord1).setOriginalValue(value1);
+        sheetSpread.addCell(new CellImpl(2, 2, sheetSpread));
+        sheetSpread.getCell(coord2).setOriginalValue(value2);
+        sheetSpread.addCell(new CellImpl(3, 2, sheetSpread));
+        sheetSpread.getCell(coord3).setOriginalValue(value3);
 
-        Coordinate trying = new CoordinateImpl(1, 5);
+
+        Coordinate trying = new CoordinateImpl(2, 2);
         Cell cell = sheetSpread.getCell(trying);
         System.out.println(cell);
 

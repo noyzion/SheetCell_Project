@@ -24,7 +24,7 @@ public class CoordinateImpl implements Coordinate {
 
     @Override
     public String toString() {
-        return String.format("row = %d, column = %d", row, column);
+        return String.format(CoordinateFactory.getKey(this));
     }
 
     @Override

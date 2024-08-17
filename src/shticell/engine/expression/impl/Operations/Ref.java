@@ -13,6 +13,8 @@ import javax.print.DocFlavor;
 public class Ref extends UnaryExpression {
 
     Sheet sheet;
+    Coordinate refCoordinate;
+
     public Ref(Expression expression1, Sheet sheet) {
         super(expression1);
         this.sheet = sheet;
@@ -23,16 +25,16 @@ public class Ref extends UnaryExpression {
     protected Object evaluate(Object object) throws NumberFormatException {
         if (!(object instanceof String)) {
             throw new IllegalArgumentException("argument must be of type String.");
+        } else {
+            int[] coordinates = CellImpl.convertCellIdentifierToCoordinates(sheet, (String) object);
+            this.refCoordinate = new CoordinateImpl(coordinates[1], coordinates[0]);
+            return sheet.getCell(refCoordinate).getEffectiveValue().getValue();
         }
-        else {
-           int[] coordinates = CellImpl.convertCellIdentifierToCoordinates(sheet,(String) object);
-            Coordinate getRefOf = new CoordinateImpl(coordinates[1],coordinates[0]);
-            return sheet.getCell(getRefOf).getEffectiveValue().getValue();
-        }
-
-
     }
 
+    public Coordinate getRefCoordinate() {
+        return refCoordinate;
+    }
 
         @Override
         public String getOperationName() {

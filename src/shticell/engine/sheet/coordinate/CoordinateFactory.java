@@ -9,6 +9,11 @@ public class CoordinateFactory {
 
     private static Map<String, Coordinate> cachedCoordinates = new HashMap<>();
 
+    public static String getKey(Coordinate coordinate) {
+        // Generate the key in the same format as used in createCoordinate
+        return coordinate.getRow() + ":" + coordinate.getColumn();
+    }
+
     public static Coordinate createCoordinate(Sheet sheet,int row, int column) throws IndexOutOfBoundsException {
 
         if(row< 0 || row > sheet.getRowSize()

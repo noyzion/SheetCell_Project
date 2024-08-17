@@ -2,6 +2,7 @@ package shticell.engine.sheet.cell.impl;
 
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateImpl;
@@ -14,18 +15,14 @@ public class CellImpl implements Cell {
     private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
-    private List<Cell> relatedCells = new ArrayList<Cell>();
-    private List<Cell> affectedCells = new ArrayList<>();
+    private List<Coordinate> relatedCells = new ArrayList<>();
+    private List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(int row, int column, String originalValue, int version,Sheet sheet) {
-        this.coordinate = new CoordinateImpl(row, column);
-        this.originalValue = originalValue;
-        this.effectiveValue = new EffectiveValueImp();
-        this.effectiveValue.calculateValue(sheet,originalValue);
-        this.lastVersionUpdate = version;
+    public CellImpl(int row, int column,Sheet sheet) {
         this.mySheet = sheet;
-
+        this.coordinate = new CoordinateImpl(row, column);
+        this.effectiveValue= new EffectiveValueImp(this.coordinate);
     }
 
     @Override
@@ -50,17 +47,22 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void addCellToRelatedCells(Cell cell) {
-        relatedCells.add(cell);
+    public void addCellToRelatedCells(Coordinate coordinate) {
+        if (!relatedCells.contains(coordinate)) {
+            relatedCells.add(coordinate);
+        }
     }
 
     @Override
-    public void addCellToAffectedCells(Cell cell) {
-        affectedCells.add(cell);
+    public void addCellToAffectedCells(Coordinate coordinate) {
+        if (!affectedCells.contains(coordinate)) {
+            affectedCells.add(coordinate);
+        }
     }
 
+
     @Override
-    public List<Cell> getRelatedCells() {
+    public List<Coordinate> getRelatedCells() {
         return relatedCells;
     }
 
@@ -75,7 +77,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public List<Cell> getAffectedCells() {
+    public List<Coordinate> getAffectedCells() {
         return affectedCells;
     }
 
