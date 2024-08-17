@@ -1,11 +1,13 @@
 package shticell.engine.sheet.cell.api;
 
+import shticell.engine.sheet.api.Sheet;
+
 public interface EffectiveValue {
     CellType getCellType();
 
     Object getValue();
 
-    void calculateValue(String originalValue);
+    void calculateValue(Sheet sheet,String originalValue);
 
 
 

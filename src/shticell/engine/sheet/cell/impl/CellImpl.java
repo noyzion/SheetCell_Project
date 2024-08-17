@@ -1,5 +1,6 @@
 package shticell.engine.sheet.cell.impl;
 
+import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
@@ -9,6 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CellImpl implements Cell {
+    private Sheet mySheet;
     private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
@@ -16,14 +18,14 @@ public class CellImpl implements Cell {
     private List<Cell> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(int row, int column, String originalValue, int version, List<Cell> relatedOn, List<Cell> affectedOn) {
+    public CellImpl(int row, int column, String originalValue, int version,Sheet sheet) {
         this.coordinate = new CoordinateImpl(row, column);
         this.originalValue = originalValue;
         this.effectiveValue = new EffectiveValueImp();
-        this.effectiveValue.calculateValue(originalValue);
-        this.lastVersionUpdate = 1;
-        this.relatedCells = relatedOn;
-        this.affectedCells = affectedOn;
+        this.effectiveValue.calculateValue(sheet,originalValue);
+        this.lastVersionUpdate = version;
+        this.mySheet = sheet;
+
     }
 
     @Override
@@ -34,7 +36,7 @@ public class CellImpl implements Cell {
     @Override
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
-        effectiveValue.calculateValue(originalValue);
+        effectiveValue.calculateValue(mySheet,originalValue);
     }
 
     @Override
@@ -95,5 +97,25 @@ public class CellImpl implements Cell {
                 relatedCells != null && !relatedCells.isEmpty() ? relatedCells.toString() : "[]",
                 affectedCells != null && !affectedCells.isEmpty() ? affectedCells.toString() : "[]"
         );
+    }
+
+
+    public static int[] convertCellIdentifierToCoordinates(Sheet sheet, String cellIdentifier) {
+        int rowIndex = 0;
+        int columnIndex = 0;
+
+        int i = 0;
+        while (i < cellIdentifier.length() && Character.isLetter(cellIdentifier.charAt(i))) {
+            columnIndex = columnIndex * 26 + (cellIdentifier.charAt(i) - 'A' + 1);
+            i++;
+        }
+
+        rowIndex = Integer.parseInt(cellIdentifier.substring(i));
+
+        if (rowIndex < 0 || rowIndex > sheet.getRowSize() ||
+                columnIndex < 0 || columnIndex > sheet.getColSize()) {
+            throw new IndexOutOfBoundsException();
+        }
+        return new int[]{columnIndex, rowIndex};
     }
 }

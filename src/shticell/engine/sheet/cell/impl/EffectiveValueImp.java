@@ -4,6 +4,7 @@ import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.NumberExpression;
 import shticell.engine.expression.impl.Operations.*;
 import shticell.engine.expression.impl.StringExpression;
+import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 
@@ -45,18 +46,18 @@ public class EffectiveValueImp implements EffectiveValue {
     }
 
     @Override
-    public void calculateValue(String originalValue) {
+    public void calculateValue(Sheet sheet,String originalValue) {
         if (originalValue.isEmpty()) {
             this.value = null;
         } else if (originalValue.startsWith("{")) {
-            stringToExpression(originalValue);
+            stringToExpression(sheet,originalValue);
             this.cellType = CellType.EXPRESSION;
         } else {
             numOrString(originalValue);
         }
     }
 
-    private String[] stringTrimer(String input) {
+    private String[] stringTrimer(Sheet sheet,String input) {
         // Remove the outer braces if present
         if (input.startsWith("{") && input.endsWith("}")) {
             input = input.substring(1, input.length() - 1).trim();
@@ -100,12 +101,12 @@ public class EffectiveValueImp implements EffectiveValue {
         return operatorAndArgs;
     }
 
-    private Expression createExpression(String[] expression) {
+    private Expression createExpression(Sheet sheet,String[] expression) {
         String operator = expression[0];
         List<Expression> args = new ArrayList<>();
 
         for (int i = 1; i < expression.length; i++) {
-            args.add(stringToExpression(expression[i]));
+            args.add(stringToExpression(sheet,expression[i]));
         }
         Expression res;
 
@@ -119,7 +120,7 @@ public class EffectiveValueImp implements EffectiveValue {
             case "ABS" -> res = new Abs(args.get(0));
             case "CONCAT" -> res = new Concat(args.get(0), args.get(1));
             case "SUB" -> res = new Sub(args.get(0), args.get(1), args.get(2));
-            case "REF" -> res = new Ref(args.get(0));
+            case "REF" -> res = new Ref(args.get(0),sheet);
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
         };
 
@@ -127,10 +128,10 @@ public class EffectiveValueImp implements EffectiveValue {
         return res;
     }
 
-    private Expression stringToExpression(String input) {
+    private Expression stringToExpression(Sheet sheet,String input) {
 
         if (input.startsWith("{") && input.endsWith("}")) {
-            return createExpression(stringTrimer(input));
+            return createExpression(sheet,stringTrimer(sheet,input));
         } else {
             try {
                 return new NumberExpression(Double.parseDouble(input));

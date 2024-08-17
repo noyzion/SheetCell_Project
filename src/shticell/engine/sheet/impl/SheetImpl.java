@@ -51,7 +51,7 @@ public class SheetImpl implements Sheet {
     @Override
     public void addCell(Cell newCell) {
         Coordinate cellCord = newCell.getCoordinate();
-        Coordinate coordinate = CoordinateFactory.createCoordinate(cellCord.getRow(), cellCord.getColumn());
+        Coordinate coordinate = CoordinateFactory.createCoordinate(this,cellCord.getRow(), cellCord.getColumn());
         cells.put(coordinate, newCell);
     }
 

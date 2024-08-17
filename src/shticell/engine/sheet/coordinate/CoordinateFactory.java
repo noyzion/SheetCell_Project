@@ -1,5 +1,7 @@
 package shticell.engine.sheet.coordinate;
 
+import shticell.engine.sheet.api.Sheet;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,8 +9,12 @@ public class CoordinateFactory {
 
     private static Map<String, Coordinate> cachedCoordinates = new HashMap<>();
 
-    public static Coordinate createCoordinate(int row, int column) {
+    public static Coordinate createCoordinate(Sheet sheet,int row, int column) throws IndexOutOfBoundsException {
 
+        if(row< 0 || row > sheet.getRowSize()
+        || column < 0 || column > sheet.getColSize()) {
+            throw new IndexOutOfBoundsException();
+        }
         String key = row + ":" + column;
         if (cachedCoordinates.containsKey(key)) {
             return cachedCoordinates.get(key);
