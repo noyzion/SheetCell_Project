@@ -74,6 +74,7 @@ public class UIManager {
         Coordinate trying = new CoordinateImpl(2, 2);
         Cell cell = sheetSpread.getCell(trying);
         System.out.println(cell);
-
+        System.out.println("\n");
+        System.out.println(sheetSpread.toString());
     }
 }
