@@ -59,6 +59,9 @@ public class SheetImpl implements Sheet {
         return cells.get(coordinate);
     }
 
+    public Cell removeCell(Coordinate coordinate) {
+        return cells.remove(coordinate);
+    }
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();

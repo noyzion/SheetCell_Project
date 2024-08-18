@@ -61,7 +61,6 @@ public String getExpressionName()
     }
 
     private String[] stringTrimer(Sheet sheet,String input) {
-        // Remove the outer braces if present
         if (input.startsWith("{") && input.endsWith("}")) {
             input = input.substring(1, input.length() - 1).trim();
         }
@@ -71,7 +70,6 @@ public String getExpressionName()
         boolean insideBraces = false;
         int openBrackets = 0;
 
-        // Parse the input to separate the operator and arguments
         for (char c : input.toCharArray()) {
             if (c == '{') {
                 insideBraces = true;
@@ -85,12 +83,12 @@ public String getExpressionName()
 
             if (c == ',' && !insideBraces) {
                 result.add(currentElement.toString().trim());
-                currentElement.setLength(0); // Clear the current element
+                currentElement.setLength(0);
             } else {
                 currentElement.append(c);
             }
         }
-        result.add(currentElement.toString().trim()); // Add the last element
+        result.add(currentElement.toString().trim());
 
         String operator = result.remove(0);
 

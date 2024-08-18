@@ -34,6 +34,10 @@ public class CellImpl implements Cell {
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
         effectiveValue.calculateValue(mySheet,originalValue);
+        for(Coordinate coord : affectedCells) {
+            Cell cell = mySheet.getCell(coord);
+            cell.getEffectiveValue().calculateValue(mySheet,cell.getOriginalValue());
+        }
     }
 
     @Override

@@ -69,12 +69,26 @@ public class UIManager {
         sheetSpread.getCell(coord2).setOriginalValue(value2);
         sheetSpread.addCell(new CellImpl(3, 2, sheetSpread));
         sheetSpread.getCell(coord3).setOriginalValue(value3);
+        String value8 = "{CONCAT, 'Hello ', {REF,B1}}"; // Expected to concatenate "Hello " with the result of value1
 
+        String value7 = "{TIMES, {REF,B2}, {PLUS, 2, {REF,B1}}}"; // Expected to multiply the result of value2 by (2 + value1)
+
+        Coordinate coord7 = new CoordinateImpl(4, 2);
+        sheetSpread.addCell(new CellImpl(4, 2, sheetSpread));
+        sheetSpread.getCell(coord7).setOriginalValue(value7);
+
+        System.out.println(sheetSpread.getCell(coord7));
 
         Coordinate trying = new CoordinateImpl(2, 2);
         Cell cell = sheetSpread.getCell(trying);
         System.out.println(cell);
         System.out.println("\n");
         System.out.println(sheetSpread.toString());
+
+        cell.setOriginalValue("10");
+
+        System.out.println("\n");
+        System.out.println(sheetSpread.toString());
+
     }
 }
