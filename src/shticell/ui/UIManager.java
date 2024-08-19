@@ -30,7 +30,6 @@ public class UIManager {
 
     }
 
-
     public int getUserChoice(int range) {
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
@@ -58,7 +57,6 @@ public class UIManager {
 
         return userChoice;
     }
-
 
     private void updateSingleCell(Sheet sheet, Coordinate coordinate, String newOriginalValue) {
 
@@ -149,10 +147,10 @@ public class UIManager {
         return input.matches("[A-Z]+\\d+");
     }
 
-
     private String getNewValueForCell() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the new value: ");
         return scanner.nextLine();
     }
+
 }
