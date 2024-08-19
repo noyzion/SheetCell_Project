@@ -23,7 +23,6 @@ public class Minus extends BinaryExpression {
         double num1 = (Double) e1;
         double num2 = (Double) e2;
 
-        // Perform subtraction
         return num1 - num2;
     }
 }

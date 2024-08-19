@@ -77,10 +77,10 @@ public class UIManager {
             }
             cell.updateVersion();
             sheet.updateVersion();
-            System.out.println("Cell at: " + coordinate.toString());
+            System.out.println("Cell at: " + coordinate);
             System.out.println("Original value: " + cell.getOriginalValue());
             System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
-            System.out.println(sheet.toString());
+            System.out.println(sheet);
 
     }
 

@@ -2,7 +2,6 @@ package shticell.engine.expression.impl;
 
 import shticell.engine.expression.api.Expression;
 
-import javax.naming.Context;
 
 public class NumberExpression implements Expression {
     private final double value;

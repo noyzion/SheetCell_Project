@@ -3,9 +3,9 @@ package shticell.engine.expression.impl;
 import shticell.engine.expression.api.Expression;
 
 public abstract class TrinaryExpression implements Expression {
-    private Expression expression1;
-    private Expression expression2;
-    private Expression expression3;
+    private final Expression expression1;
+    private final Expression expression2;
+    private final Expression expression3;
 
     public TrinaryExpression(Expression expression1, Expression expression2, Expression expression3) {
         this.expression1 = expression1;

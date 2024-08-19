@@ -1,6 +1,5 @@
 package shticell.engine.sheet.coordinate;
 
-import java.util.Objects;
 
 public class CoordinateImpl implements Coordinate {
 

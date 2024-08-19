@@ -2,10 +2,8 @@ package shticell.engine.sheet.cell.impl;
 
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
-import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
-import shticell.engine.sheet.coordinate.CoordinateImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,8 +101,8 @@ public class CellImpl implements Cell {
                 effectiveValue != null ? effectiveValue.getValue() : "N/A",
                 originalValue != null ? originalValue : "N/A",
                 lastVersionUpdate,
-                relatedCells != null && !relatedCells.isEmpty() ? relatedCells.toString() : "[]",
-                affectedCells != null && !affectedCells.isEmpty() ? affectedCells.toString() : "[]"
+                !relatedCells.isEmpty() ? relatedCells.toString() : "[]",
+                !affectedCells.isEmpty() ? affectedCells.toString() : "[]"
         );
     }
 
