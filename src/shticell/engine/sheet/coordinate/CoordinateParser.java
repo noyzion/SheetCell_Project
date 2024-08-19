@@ -1,7 +1,4 @@
-package shticell.ui;
-
-import shticell.engine.sheet.coordinate.Coordinate;
-import shticell.engine.sheet.coordinate.CoordinateImpl;
+package shticell.engine.sheet.coordinate;
 
 public class CoordinateParser {
 

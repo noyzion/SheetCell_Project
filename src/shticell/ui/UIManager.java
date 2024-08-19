@@ -4,7 +4,7 @@ import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
-import shticell.engine.sheet.coordinate.CoordinateImpl;
+import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.impl.SheetImpl;
 
 import java.util.Optional;
@@ -61,8 +61,8 @@ public class UIManager {
 
 
     private void updateSingleCell(Sheet sheet, Coordinate coordinate, String newOriginalValue) {
-        try {
-            Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
+
+        Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
             Cell cell;
             if (optionalCell.isPresent()) {
                 cell = optionalCell.get();
@@ -72,17 +72,18 @@ public class UIManager {
                 cell.setOriginalValue(newOriginalValue);
             } else {
                 System.out.println("Cell at: " + coordinate.toString() + " is empty");
-                cell = new CellImpl(coordinate, sheet, newOriginalValue);
+                cell = new CellImpl(coordinate, sheet);
+                sheet.addCell(cell);
+                cell.setOriginalValue(newOriginalValue);
                 sheet.addCell(cell);
             }
+            cell.updateVersion();
             sheet.updateVersion();
             System.out.println("Cell at: " + coordinate.toString());
             System.out.println("Original value: " + cell.getOriginalValue());
             System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
+            System.out.println(sheet.toString());
 
-        } catch (Exception e) {
-            System.out.println("An unexpected error occurred while updating the cell: " + e.getMessage());
-        }
     }
 
     public void start() {

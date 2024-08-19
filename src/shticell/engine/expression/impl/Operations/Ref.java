@@ -7,6 +7,7 @@ import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateImpl;
+import shticell.engine.sheet.coordinate.CoordinateParser;
 
 import javax.print.DocFlavor;
 
@@ -26,8 +27,7 @@ public class Ref extends UnaryExpression {
         if (!(object instanceof String)) {
             throw new IllegalArgumentException("argument must be of type String.");
         } else {
-            int[] coordinates = CellImpl.convertCellIdentifierToCoordinates(sheet, (String) object);
-            this.refCoordinate = new CoordinateImpl(coordinates[1], coordinates[0]);
+            this.refCoordinate = CoordinateParser.parse((String) object);
             return sheet.getCell(refCoordinate).getEffectiveValue().getValue();
         }
     }

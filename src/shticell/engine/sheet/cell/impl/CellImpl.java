@@ -19,10 +19,9 @@ public class CellImpl implements Cell {
     private final List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(Coordinate coordinate, Sheet sheet, String originalValue) {
+    public CellImpl(Coordinate coordinate, Sheet sheet) {
         this.mySheet = sheet;
         this.coordinate = coordinate;
-        setOriginalValue(originalValue);
     }
 
     @Override
@@ -37,7 +36,6 @@ public class CellImpl implements Cell {
             effectiveValue= new EffectiveValueImp(this.coordinate);
         }
         effectiveValue.calculateValue(mySheet, originalValue);
-        this.updateVersion();
         for (Coordinate cord : affectedCells) {
             Cell cell = mySheet.getCell(cord);
             cell.getEffectiveValue().calculateValue(mySheet, cell.getOriginalValue());
@@ -111,22 +109,4 @@ public class CellImpl implements Cell {
     }
 
 
-    public static int[] convertCellIdentifierToCoordinates(Sheet sheet, String cellIdentifier) {
-        int rowIndex = 0;
-        int columnIndex = 0;
-
-        int i = 0;
-        while (i < cellIdentifier.length() && Character.isLetter(cellIdentifier.charAt(i))) {
-            columnIndex = columnIndex * 26 + (cellIdentifier.charAt(i) - 'A' + 1);
-            i++;
-        }
-
-        rowIndex = Integer.parseInt(cellIdentifier.substring(i));
-
-        if (rowIndex < 0 || rowIndex > sheet.getRowSize() ||
-                columnIndex < 0 || columnIndex > sheet.getColSize()) {
-            throw new IndexOutOfBoundsException();
-        }
-        return new int[]{columnIndex, rowIndex};
-    }
 }

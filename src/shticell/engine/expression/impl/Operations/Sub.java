@@ -16,7 +16,7 @@ public class Sub extends TrinaryExpression {
 
     @Override
     protected Object evaluate(Object evaluate1, Object evaluate2, Object evaluate3) {
-        if (!(evaluate1 instanceof String)) {
+        if (!(evaluate1 instanceof String str)) {
             throw new IllegalArgumentException("First argument must be a String.");
         }
 
@@ -24,7 +24,6 @@ public class Sub extends TrinaryExpression {
             throw new IllegalArgumentException("Second and third arguments must be numeric.");
         }
 
-        String str = (String) evaluate1;
         int startIndex = ((Double) evaluate2).intValue();
         int endIndex = ((Double) evaluate3).intValue();
 

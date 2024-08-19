@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class CoordinateFactory {
 
-    private static Map<String, Coordinate> cachedCoordinates = new HashMap<>();
+    private static final Map<String, Coordinate> cachedCoordinates = new HashMap<>();
 
     public static String getKey(Coordinate coordinate) {
         // Generate the key in the same format as used in createCoordinate
