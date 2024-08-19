@@ -7,6 +7,7 @@ import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateImpl;
 import shticell.engine.sheet.impl.SheetImpl;
 
+import java.util.Optional;
 import java.util.Scanner;
 
 public class UIManager {
@@ -19,6 +20,14 @@ public class UIManager {
         System.out.println("(4) Update Single Cell");
         System.out.println("(5) Display Versions");
         System.out.println("(6) Exit");
+    }
+
+    private void displaySpreadsheet() {
+
+    }
+
+    private void displaySingleCell() {
+
     }
 
 
@@ -50,45 +59,99 @@ public class UIManager {
         return userChoice;
     }
 
+
+    private void updateSingleCell(Sheet sheet, Coordinate coordinate, String newOriginalValue) {
+        try {
+            Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
+            Cell cell;
+            if (optionalCell.isPresent()) {
+                cell = optionalCell.get();
+                System.out.println("Cell at: " + coordinate.toString());
+                System.out.println("Original value: " + cell.getOriginalValue());
+                System.out.println("Effective value: " + cell.getEffectiveValue());
+                cell.setOriginalValue(newOriginalValue);
+            } else {
+                System.out.println("Cell at: " + coordinate.toString() + " is empty");
+                cell = new CellImpl(coordinate, sheet, newOriginalValue);
+                sheet.addCell(cell);
+            }
+            sheet.updateVersion();
+            System.out.println("Cell at: " + coordinate.toString());
+            System.out.println("Original value: " + cell.getOriginalValue());
+            System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
+
+        } catch (Exception e) {
+            System.out.println("An unexpected error occurred while updating the cell: " + e.getMessage());
+        }
+    }
+
     public void start() {
+        Sheet sheet = new SheetImpl("First sheet", 5, 5);
+        boolean exit = false;
+
+        while (!exit) {
+            printMenu();
+            int choice = getUserChoice(6);
+
+            switch (choice) {
+                //case 1 -> readFile();
+                case 2 -> displaySpreadsheet();
+                case 3 -> displaySingleCell();
+                case 4 -> updateSingleCell(sheet, getCellCoordinateToChange(sheet), getNewValueForCell());
+                //case 5 -> displayVersions();
+                case 6 -> exit = true;
+                default -> System.out.println("Invalid choice. Please try again.");
+            }
+
+            if (!exit) {
+                System.out.println("Returning to menu...\n");
+            }
+        }
+
+        System.out.println("Exiting program. Goodbye!");
+    }
+
+    private Coordinate getCellCoordinateToChange(Sheet sheet) {
+        Scanner scanner = new Scanner(System.in);
+        Coordinate coordinate = null;
+        boolean validInput = false;
+
+        while (!validInput) {
+            System.out.print("Please enter the cell coordinate (e.g., A5): ");
+            String input = scanner.nextLine().trim();
+
+            // Validate the input format
+            if (!isValidCoordinateFormat(input)) {
+                System.out.println("Invalid format. Please enter the coordinate in the format (e.g., A5).");
+                continue;
+            }
+
+            try {
+                coordinate = CoordinateParser.parse(input);
+
+                if (coordinate.getRow() < 0 || coordinate.getRow() >= sheet.getRowSize() ||
+                        coordinate.getColumn() < 0 || coordinate.getColumn() >= sheet.getColSize()) {
+                    throw new IndexOutOfBoundsException("Coordinate " + input + " is out of bounds.");
+                }
+
+                validInput = true;
+            } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+                System.out.println("Invalid coordinate: " + e.getMessage());
+            }
+        }
+
+        return coordinate;
+    }
+
+    private boolean isValidCoordinateFormat(String input) {
+        // Regular expression to match format: one or more uppercase letters followed by one or more digits
+        return input.matches("[A-Z]+\\d+");
+    }
 
 
-        String value1 = "500";
-        String value2 = "{PLUS,{REF,B1},2}"; //504
-        String value3 = "{MINUS, {REF,B2},{REF,B1}}";
-
-        Coordinate coord1 = new CoordinateImpl(1, 2);
-        Coordinate coord2 = new CoordinateImpl(2, 2);
-        Coordinate coord3 = new CoordinateImpl(3, 2);
-
-
-        Sheet sheetSpread = new SheetImpl("FirstSheet", 5, 5);
-        sheetSpread.addCell(new CellImpl(1, 2, sheetSpread));
-        sheetSpread.getCell(coord1).setOriginalValue(value1);
-        sheetSpread.addCell(new CellImpl(2, 2, sheetSpread));
-        sheetSpread.getCell(coord2).setOriginalValue(value2);
-        sheetSpread.addCell(new CellImpl(3, 2, sheetSpread));
-        sheetSpread.getCell(coord3).setOriginalValue(value3);
-        String value8 = "{CONCAT, 'Hello ', {REF,B1}}"; // Expected to concatenate "Hello " with the result of value1
-
-        String value7 = "{TIMES, {REF,B2}, {PLUS, 2, {REF,B1}}}"; // Expected to multiply the result of value2 by (2 + value1)
-
-        Coordinate coord7 = new CoordinateImpl(4, 2);
-        sheetSpread.addCell(new CellImpl(4, 2, sheetSpread));
-        sheetSpread.getCell(coord7).setOriginalValue(value7);
-
-        System.out.println(sheetSpread.getCell(coord7));
-
-        Coordinate trying = new CoordinateImpl(2, 2);
-        Cell cell = sheetSpread.getCell(trying);
-        System.out.println(cell);
-        System.out.println("\n");
-        System.out.println(sheetSpread.toString());
-
-        cell.setOriginalValue("10");
-
-        System.out.println("\n");
-        System.out.println(sheetSpread.toString());
-
+    private String getNewValueForCell() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Enter the new value: ");
+        return scanner.nextLine();
     }
 }

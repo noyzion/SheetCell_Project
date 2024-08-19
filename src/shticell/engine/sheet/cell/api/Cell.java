@@ -24,7 +24,7 @@ public interface Cell {
 
     public void addCellToRelatedCells(Coordinate coordinate);
 
-    public void setLastVersionUpdate(int lastVersionUpdate);
+    public void updateVersion();
 
 
     }

@@ -12,17 +12,17 @@ import java.util.List;
 
 public class CellImpl implements Cell {
     private final Sheet mySheet;
-    private final EffectiveValue effectiveValue;
+    private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
     private final List<Coordinate> relatedCells = new ArrayList<>();
     private final List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
-    public CellImpl(int row, int column,Sheet sheet) {
+    public CellImpl(Coordinate coordinate, Sheet sheet, String originalValue) {
         this.mySheet = sheet;
-        this.coordinate = new CoordinateImpl(row, column);
-        this.effectiveValue= new EffectiveValueImp(this.coordinate);
+        this.coordinate = coordinate;
+        setOriginalValue(originalValue);
     }
 
     @Override
@@ -33,10 +33,15 @@ public class CellImpl implements Cell {
     @Override
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
-        effectiveValue.calculateValue(mySheet,originalValue);
-        for(Coordinate cord : affectedCells) {
+        if(effectiveValue == null) {
+            effectiveValue= new EffectiveValueImp(this.coordinate);
+        }
+        effectiveValue.calculateValue(mySheet, originalValue);
+        this.updateVersion();
+        for (Coordinate cord : affectedCells) {
             Cell cell = mySheet.getCell(cord);
-            cell.getEffectiveValue().calculateValue(mySheet,cell.getOriginalValue());
+            cell.getEffectiveValue().calculateValue(mySheet, cell.getOriginalValue());
+            cell.updateVersion();
         }
     }
 
@@ -76,8 +81,8 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void setLastVersionUpdate(int lastVersionUpdate) {
-        this.lastVersionUpdate = lastVersionUpdate;
+    public void updateVersion() {
+        this.lastVersionUpdate++;
     }
 
     @Override

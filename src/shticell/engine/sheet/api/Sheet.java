@@ -5,7 +5,7 @@ import shticell.engine.sheet.coordinate.Coordinate;
 
 public interface Sheet {
 
-    public void setVersion(int version);
+    public void updateVersion();
 
     public int getVersion();
 

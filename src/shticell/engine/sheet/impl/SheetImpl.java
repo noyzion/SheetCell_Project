@@ -34,8 +34,8 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public void setVersion(int version) {
-        this.version = version;
+    public void updateVersion() {
+        this.version++;
     }
 
     @Override
