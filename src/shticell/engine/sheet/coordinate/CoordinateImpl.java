@@ -28,12 +28,9 @@ public class CoordinateImpl implements Coordinate {
     }
 
     @Override
-  public boolean equals(Object obj) {
-        if (obj instanceof Coordinate) {
-            Coordinate c = (Coordinate) obj;
-            if (c.getRow() == this.getRow() && c.getColumn() == this.getColumn()) {
-                return true;
-            }
+    public boolean equals(Object obj) {
+        if (obj instanceof Coordinate c) {
+            return c.getRow() == this.getRow() && c.getColumn() == this.getColumn();
         }
         return false;
     }

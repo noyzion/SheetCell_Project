@@ -62,13 +62,13 @@ public class SheetImpl implements Sheet {
     public Cell removeCell(Coordinate coordinate) {
         return cells.remove(coordinate);
     }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Sheet name: ").append(sheetName).append("\n")
                 .append("sheet version is ").append(version).append("\n");
-// Print the column headers
-        sb.append("   "); // Padding for row number column
+        sb.append("   ");
         for (int col = 0; col < columnSize; col++) {
             sb.append(String.format("%-5s", (char) ('A' + col))); // Column headers
             if (col < columnSize - 1) {
@@ -77,16 +77,15 @@ public class SheetImpl implements Sheet {
         }
         sb.append("\n");
 
-        // Print each row
         for (int row = 0; row < rowSize; row++) {
-            sb.append(String.format("%02d ", row + 1)); // Row number
+            sb.append(String.format("%02d ", row + 1));
             for (int col = 0; col < columnSize; col++) {
                 Coordinate coordinate = CoordinateFactory.createCoordinate(this, row, col);
                 Cell cell = getCell(coordinate);
                 String cellValue = (cell != null && cell.getEffectiveValue().getValue() != null)
                         ? cell.getEffectiveValue().getValue().toString()
                         : "";
-                sb.append(String.format("%-5s", cellValue)); // Cell value with padding
+                sb.append(String.format("%-5s", cellValue));
                 if (col < columnSize - 1) {
                     sb.append("|");
                 }
@@ -96,4 +95,5 @@ public class SheetImpl implements Sheet {
 
         return sb.toString();
     }
+
 }

@@ -54,7 +54,7 @@ public class UIManager {
 
 
         String value1 = "500";
-        String value2 = "{PLUS,{REF,B1},4}"; //504
+        String value2 = "{PLUS,{REF,B1},2}"; //504
         String value3 = "{MINUS, {REF,B2},{REF,B1}}";
 
         Coordinate coord1 = new CoordinateImpl(1, 2);

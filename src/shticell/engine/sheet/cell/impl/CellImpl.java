@@ -11,12 +11,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CellImpl implements Cell {
-    private Sheet mySheet;
-    private EffectiveValue effectiveValue;
+    private final Sheet mySheet;
+    private final EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
-    private List<Coordinate> relatedCells = new ArrayList<>();
-    private List<Coordinate> affectedCells = new ArrayList<>();
+    private final List<Coordinate> relatedCells = new ArrayList<>();
+    private final List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
 
     public CellImpl(int row, int column,Sheet sheet) {
@@ -34,8 +34,8 @@ public class CellImpl implements Cell {
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
         effectiveValue.calculateValue(mySheet,originalValue);
-        for(Coordinate coord : affectedCells) {
-            Cell cell = mySheet.getCell(coord);
+        for(Coordinate cord : affectedCells) {
+            Cell cell = mySheet.getCell(cord);
             cell.getEffectiveValue().calculateValue(mySheet,cell.getOriginalValue());
         }
     }

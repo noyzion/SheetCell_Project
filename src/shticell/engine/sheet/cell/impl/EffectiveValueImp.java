@@ -17,7 +17,7 @@ public class EffectiveValueImp implements EffectiveValue {
     private CellType cellType;
     private Object value;
     private String expressionName;
-    private Coordinate coordinate;
+    private final Coordinate coordinate;
 
     public EffectiveValueImp(Coordinate coordinate) {
         this.coordinate = coordinate;
@@ -33,11 +33,11 @@ public class EffectiveValueImp implements EffectiveValue {
         return value;
     }
 
-@Override
-public String getExpressionName()
-{
-    return expressionName;
-}
+    @Override
+    public String getExpressionName() {
+        return expressionName;
+    }
+
     //TODO!
     @Override
     public <T> T extractValueWithExpectation(Class<T> type) {
@@ -49,18 +49,18 @@ public String getExpressionName()
     }
 
     @Override
-    public void calculateValue(Sheet sheet,String originalValue) {
+    public void calculateValue(Sheet sheet, String originalValue) {
         if (originalValue.isEmpty()) {
             this.value = null;
         } else if (originalValue.startsWith("{")) {
-            stringToExpression(sheet,originalValue);
+            stringToExpression(sheet, originalValue);
             this.cellType = CellType.EXPRESSION;
         } else {
             numOrString(originalValue);
         }
     }
 
-    private String[] stringTrimer(Sheet sheet,String input) {
+    private String[] stringTrimer(Sheet sheet, String input) {
         if (input.startsWith("{") && input.endsWith("}")) {
             input = input.substring(1, input.length() - 1).trim();
         }
@@ -102,28 +102,14 @@ public String getExpressionName()
         return operatorAndArgs;
     }
 
-    private Expression createExpression(Sheet sheet,String[] expression) {
+    private Expression createExpression(Sheet sheet, String[] expression) {
         String operator = expression[0];
         List<Expression> args = new ArrayList<>();
 
         for (int i = 1; i < expression.length; i++) {
             args.add(stringToExpression(sheet, expression[i]));
         }
-        Expression res;
-
-        switch (operator) {
-            case "PLUS" -> res = new Plus(args.get(0), args.get(1));
-            case "MINUS" -> res = new Minus(args.get(0), args.get(1));
-            case "TIMES" -> res = new Times(args.get(0), args.get(1));
-            case "DIVIDE" -> res = new Divide(args.get(0), args.get(1));
-            case "MOD" -> res = new Mod(args.get(0), args.get(1));
-            case "POW" -> res = new Pow(args.get(0), args.get(1));
-            case "ABS" -> res = new Abs(args.get(0));
-            case "CONCAT" -> res = new Concat(args.get(0), args.get(1));
-            case "SUB" -> res = new Sub(args.get(0), args.get(1), args.get(2));
-            case "REF" -> res = new Ref(args.get(0), sheet);
-            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
-        }
+        Expression res = getExpression(sheet, operator, args);
         ;
 
 
@@ -139,10 +125,52 @@ public String getExpressionName()
         return res;
     }
 
-    private Expression stringToExpression(Sheet sheet,String input) {
+    private static Expression getExpression(Sheet sheet, String operator, List<Expression> args) {
+        validateArguments(operator, args);
+        return createExpression(sheet, operator, args);
+    }
+
+    private static void validateArguments(String operator, List<Expression> args) {
+        switch (operator) {
+            case "PLUS", "MINUS", "TIMES", "DIVIDE", "MOD", "POW", "CONCAT" -> {
+                if (args.size() != 2) {
+                    throw new IllegalArgumentException(operator + " requires exactly 2 arguments, but got " + args.size());
+                }
+            }
+            case "ABS" -> {
+                if (args.size() != 1) {
+                    throw new IllegalArgumentException(operator + " requires exactly 1 argument, but got " + args.size());
+                }
+            }
+            case "SUB", "REF" -> {
+                int expectedArgs = operator.equals("SUB") ? 3 : 1;
+                if (args.size() != expectedArgs) {
+                    throw new IllegalArgumentException(operator + " requires exactly " + expectedArgs + " arguments, but got " + args.size());
+                }
+            }
+            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+        }
+    }
+
+    private static Expression createExpression(Sheet sheet, String operator, List<Expression> args) {
+        return switch (operator) {
+            case "PLUS" -> new Plus(args.get(0), args.get(1));
+            case "MINUS" -> new Minus(args.get(0), args.get(1));
+            case "TIMES" -> new Times(args.get(0), args.get(1));
+            case "DIVIDE" -> new Divide(args.get(0), args.get(1));
+            case "MOD" -> new Mod(args.get(0), args.get(1));
+            case "POW" -> new Pow(args.get(0), args.get(1));
+            case "ABS" -> new Abs(args.get(0));
+            case "CONCAT" -> new Concat(args.get(0), args.get(1));
+            case "SUB" -> new Sub(args.get(0), args.get(1), args.get(2));
+            case "REF" -> new Ref(args.get(0), sheet);
+            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
+        };
+    }
+    private Expression stringToExpression(Sheet sheet, String input) {
 
         if (input.startsWith("{") && input.endsWith("}")) {
-            return createExpression(sheet,stringTrimer(sheet,input));
+            return createExpression(sheet, stringTrimer(sheet, input));
         } else {
             try {
                 return new NumberExpression(Double.parseDouble(input));
