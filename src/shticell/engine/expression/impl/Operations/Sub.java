@@ -16,27 +16,45 @@ public class Sub extends TrinaryExpression {
 
     @Override
     protected Object evaluate(Object evaluate1, Object evaluate2, Object evaluate3) {
-        if (!(evaluate1 instanceof String str)) {
-            throw new IllegalArgumentException("First argument must be a String. Received: " + evaluate1.getClass().getSimpleName());
+        if (!(evaluate1 instanceof String str1)) {
+            throw new IllegalArgumentException("First argument must be a String. Received: "
+                    + (evaluate1 != null ? evaluate1.getClass().getSimpleName() : "null"));
         }
 
-        if (!(evaluate2 instanceof Double) || !(evaluate3 instanceof Double)) {
-            throw new IllegalArgumentException("Second and third arguments must be numeric. Received: "
-                    + evaluate2.getClass().getSimpleName() + " and "
-                    + evaluate3.getClass().getSimpleName());
+        if (!(evaluate2 instanceof Double num2)) {
+            throw new IllegalArgumentException("Second argument must be numeric. Received: "
+                    + (evaluate2 != null ? evaluate2.getClass().getSimpleName() : "null"));
         }
 
-        int startIndex = ((Double) evaluate2).intValue();
-        int endIndex = ((Double) evaluate3).intValue();
+        if (!(evaluate3 instanceof Double num3)) {
+            throw new IllegalArgumentException("Third argument must be numeric. Received: "
+                    + (evaluate3 != null ? evaluate3.getClass().getSimpleName() : "null"));
+        }
 
-        if (startIndex < 0 || startIndex > str.length() || endIndex < startIndex || endIndex > str.length()) {
-            return "!UNDEFINED!";
+        // Validate that both indices are whole numbers
+        if (isWholeNumber(num2)) {
+            throw new IllegalArgumentException("Second argument must be a whole number. Received: " + num2);
+        }
+
+        if (isWholeNumber(num3)) {
+            throw new IllegalArgumentException("Third argument must be a whole number. Received: " + num3);
+        }
+
+        int startIndex = num2.intValue();
+        int endIndex = num3.intValue();
+
+        if (startIndex < 0 || startIndex > str1.length() || endIndex < startIndex || endIndex > str1.length()) {
+            throw new IllegalArgumentException("Invalid indices: startIndex = " + startIndex + ", endIndex = " + endIndex);
         }
 
         try {
-            return str.substring(startIndex, endIndex);
+            return str1.substring(startIndex, endIndex);
         } catch (IndexOutOfBoundsException e) {
-            return "!UNDEFINED!";
+            throw new IllegalArgumentException("Error extracting substring with indices: startIndex = " + startIndex + ", endIndex = " + endIndex, e);
         }
+    }
+
+    private boolean isWholeNumber(Double number) {
+        return number % 1 != 0;
     }
 }
