@@ -6,14 +6,16 @@ import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.impl.SheetImpl;
+import shticell.engine.xmlParser.XmlSheetLoader;
 
 import java.util.Optional;
 import java.util.Scanner;
 
 public class UIManager {
 
+    Sheet sheet;
 
-    public void printMenu() {
+    private void printMenu() {
         System.out.println("(1) Read File");
         System.out.println("(2) Display Spreadsheet");
         System.out.println("(3) Display Single Cell");
@@ -23,7 +25,7 @@ public class UIManager {
     }
 
     private void displaySpreadsheet() {
-
+System.out.println(sheet.toString());
     }
 
     private void displaySingleCell() {
@@ -61,30 +63,31 @@ public class UIManager {
     private void updateSingleCell(Sheet sheet, Coordinate coordinate, String newOriginalValue) {
 
         Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
-            Cell cell;
-            if (optionalCell.isPresent()) {
-                cell = optionalCell.get();
-                System.out.println("Cell at: " + coordinate.toString());
-                System.out.println("Original value: " + cell.getOriginalValue());
-                System.out.println("Effective value: " + cell.getEffectiveValue());
-                cell.setOriginalValue(newOriginalValue);
-            } else {
-                System.out.println("Cell at: " + coordinate.toString() + " is empty");
-                cell = new CellImpl(coordinate, sheet);
-                sheet.addCell(cell);
-                cell.setOriginalValue(newOriginalValue);
-                sheet.addCell(cell);
-            }
-            cell.updateVersion();
-            sheet.updateVersion();
-            System.out.println("Cell at: " + coordinate);
+        Cell cell;
+        if (optionalCell.isPresent()) {
+            cell = optionalCell.get();
+            System.out.println("Cell at: " + coordinate.toString());
             System.out.println("Original value: " + cell.getOriginalValue());
-            System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
-            System.out.println(sheet);
+            System.out.println("Effective value: " + cell.getEffectiveValue());
+            cell.setOriginalValue(newOriginalValue);
+        } else {
+            System.out.println("Cell at: " + coordinate.toString() + " is empty");
+            cell = new CellImpl(coordinate, sheet);
+            sheet.addCell(cell);
+            cell.setOriginalValue(newOriginalValue);
+            sheet.addCell(cell);
+        }
+        cell.updateVersion();
+        sheet.updateVersion();
+        System.out.println("Cell at: " + coordinate);
+        System.out.println("Original value: " + cell.getOriginalValue());
+        System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
+        System.out.println(sheet);
 
     }
 
     public void start() {
+
         Sheet sheet = new SheetImpl("First sheet", 5, 5);
         boolean exit = false;
 
@@ -93,7 +96,7 @@ public class UIManager {
             int choice = getUserChoice(6);
 
             switch (choice) {
-                //case 1 -> readFile();
+                case 1 -> getXmlFile();
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
                 case 4 -> updateSingleCell(sheet, getCellCoordinateToChange(sheet), getNewValueForCell());
@@ -153,4 +156,13 @@ public class UIManager {
         return scanner.nextLine();
     }
 
+    private void getXmlFile() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the full path to the XML file: ");
+        System.out.println("(Example for Windows: C:\\path\\to\\your\\file.xml)\n");
+        String filePath = scanner.nextLine();
+
+        this.sheet = XmlSheetLoader.fromXmlFileToObject(filePath);
+
+    }
 }
