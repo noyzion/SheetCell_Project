@@ -41,11 +41,11 @@ public class XmlSheetValidator {
         STLLayout layout = sheet.getSTLLayout();
         int rows = layout.getRows();
         int columns = layout.getColumns();
-        if(rows < 1 || rows > 50) {
+        if (rows < 1 || rows > 50) {
             throw new IllegalArgumentException("Invalid number of rows: " + rows + ". The number of rows must be between 1 and 50.");
         }
 
-        if ( columns < 1 || columns > 20){
+        if (columns < 1 || columns > 20) {
             throw new IllegalArgumentException("Invalid number of columns: " + columns + ". The number of columns must be between 1 and 20.");
         }
     }
@@ -71,7 +71,7 @@ public class XmlSheetValidator {
         return column.charAt(0) - 'A' + 1;
     }
 
-    public static String createCellId(STLCell cell){
+    public static String createCellId(STLCell cell) {
         return cell.getColumn() + String.valueOf(cell.getRow());
     }
 }

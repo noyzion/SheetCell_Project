@@ -1,5 +1,6 @@
 package shticell.engine.expression.impl.Operations;
 
+import jakarta.xml.bind.ValidationException;
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
 
@@ -15,8 +16,12 @@ public class Times extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
-        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Argument must be numeric.");
+        if (!(e1 instanceof Double)) {
+            throw new IllegalArgumentException("First argument must be numeric. Received: " + e1.getClass().getSimpleName());
+        }
+
+        if (!(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Second argument must be numeric. Received: " + e2.getClass().getSimpleName());
         }
 
         double num1 = (Double) e1;

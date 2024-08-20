@@ -16,8 +16,12 @@ public class Mod extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
-        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Argument must be numeric.");
+        if (!(e1 instanceof Double)) {
+            throw new IllegalArgumentException("First argument must be numeric. Received: " + (e1 != null ? e1.getClass().getSimpleName() : "null"));
+        }
+
+        if (!(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Second argument must be numeric. Received: " + (e2 != null ? e2.getClass().getSimpleName() : "null"));
         }
 
         double numerator = (Double) e1;

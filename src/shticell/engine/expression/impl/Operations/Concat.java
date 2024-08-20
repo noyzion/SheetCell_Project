@@ -15,8 +15,14 @@ public class Concat extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
-        if (!(e1 instanceof String str1) || !(e2 instanceof String str2)) {
-            throw new IllegalArgumentException("Both arguments must be of type String.");
+        if (!(e1 instanceof String str1)) {
+            String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
+            throw new IllegalArgumentException("Invalid type for the first argument: Expected String, but received " + actualType + ".");
+        }
+
+        if (!(e2 instanceof String str2)) {
+            String actualType = e2 == null ? "null" : e2.getClass().getSimpleName();
+            throw new IllegalArgumentException("Invalid type for the second argument: Expected String, but received " + actualType + ".");
         }
         return str1 + str2;
     }

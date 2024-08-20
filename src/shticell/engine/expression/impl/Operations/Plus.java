@@ -1,5 +1,6 @@
 package shticell.engine.expression.impl.Operations;
 
+import jakarta.xml.bind.ValidationException;
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
 
@@ -15,8 +16,12 @@ public class Plus extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
-        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Both arguments must be of type Double.");
+        if (!(e1 instanceof Double)) {
+            throw new IllegalArgumentException("First argument must be of type Double. Received: " + (e1 != null ? e1.getClass().getSimpleName() : "null"));
+        }
+
+        if (!(e2 instanceof Double)) {
+            throw new IllegalArgumentException("Second argument must be of type Double. Received: " + (e2 != null ? e2.getClass().getSimpleName() : "null"));
         }
 
         double num1 = (Double) e1;

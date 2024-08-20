@@ -5,6 +5,7 @@ import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.sheet.impl.SheetImpl;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
@@ -130,14 +131,13 @@ System.out.println(sheet.toString());
 
             try {
                 coordinate = CoordinateParser.parse(input);
-
                 if (coordinate.getRow() < 0 || coordinate.getRow() >= sheet.getRowSize() ||
                         coordinate.getColumn() < 0 || coordinate.getColumn() >= sheet.getColSize()) {
                     throw new IndexOutOfBoundsException("Coordinate " + input + " is out of bounds.");
                 }
 
                 validInput = true;
-            } catch (IllegalArgumentException | IndexOutOfBoundsException e) {
+            } catch (IllegalArgumentException | IndexOutOfBoundsException | ParseException e) {
                 System.out.println("Invalid coordinate: " + e.getMessage());
             }
         }

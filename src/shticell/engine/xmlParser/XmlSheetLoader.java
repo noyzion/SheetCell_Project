@@ -7,42 +7,41 @@ import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
-import shticell.engine.sheet.coordinate.CoordinateImpl;
 import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.sheet.impl.SheetImpl;
 import shticell.engine.xmlParser.jaxb.STLCell;
 import shticell.engine.xmlParser.jaxb.STLCells;
 import shticell.engine.xmlParser.jaxb.STLSheet;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
+
 
 public class XmlSheetLoader {
 
-    public static Sheet fromXmlFileToObject(String filePath) {
-        System.out.println("\nFrom File to Object");
 
-        Sheet sheet = null;
+    public static Sheet fromXmlFileToObject(String filePath) {
+
         try {
             XmlSheetValidator.validateXmlPath(filePath);
             File file = new File(filePath);
-            if (file.exists()) {
-                JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
-                Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
-                STLSheet stlSheet = (STLSheet) jaxbUnmarshaller.unmarshal(file);
-                sheet = convert(stlSheet); // Convert STLSheet to Sheet
-            } else {
-                System.out.println("File does not exist");
-            }
-        } catch (JAXBException e) {
-            e.printStackTrace();
-        }
+            XmlSheetValidator.isXmlFileExists(file);
+            JAXBContext jaxbContext = JAXBContext.newInstance(STLSheet.class);
+            Unmarshaller jaxbUnmarshaller = jaxbContext.createUnmarshaller();
+            STLSheet sheet = (STLSheet) jaxbUnmarshaller.unmarshal(file);
 
-        return sheet;
+            XmlSheetValidator.validateSheetSize(sheet);
+            XmlSheetValidator.validateCellsWithinBounds(sheet);
+            return convert(sheet);
+
+        } catch (JAXBException e) {
+            throw new IllegalArgumentException(e.getMessage());
+        } catch (ParseException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static Sheet convert(STLSheet stlSheet) {
+    public static Sheet convert(STLSheet stlSheet) throws ParseException {
         if (stlSheet == null) {
             return null;
         }

@@ -16,9 +16,16 @@ public class Divide extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
-        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Invalid argument types for division.");
+        if (!(e1 instanceof Double)) {
+            String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
+            throw new IllegalArgumentException("Invalid type for the first argument: Expected Double, but received " + actualType + ".");
         }
+
+        if (!(e2 instanceof Double)) {
+            String actualType = e2 == null ? "null" : e2.getClass().getSimpleName();
+            throw new IllegalArgumentException("Invalid type for the second argument: Expected Double, but received " + actualType + ".");
+        }
+
 
         double numerator = (Double) e1;
         double denominator = (Double) e2;
