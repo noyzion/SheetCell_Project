@@ -4,12 +4,14 @@ import shticell.engine.xmlParser.jaxb.STLCell;
 import shticell.engine.xmlParser.jaxb.STLLayout;
 import shticell.engine.xmlParser.jaxb.STLSheet;
 
+import java.io.File;
+
 
 public class XmlSheetValidator {
 
     public static void validateXmlPath(String filePath) {
         if (!filePath.endsWith(".xml")) {
-            throw new IllegalArgumentException("The file does not exist or is not an XML file.");
+            throw new IllegalArgumentException("The file is not an XML file.");
         }
 
         if (!isOnlyValidChars(filePath)) {
@@ -21,7 +23,13 @@ public class XmlSheetValidator {
         }
     }
 
-    public static boolean isOnlyValidChars(String path) {
+    public static void isXmlFileExists(File file) {
+        if (!file.exists()) {
+            throw new IllegalArgumentException("The file does not exist.");
+        }
+    }
+
+    public static Boolean isOnlyValidChars(String path) {
         return path.matches("^[ a-zA-Z0-9_\\\\:\\-\\.]+$");
     }
 
@@ -29,31 +37,41 @@ public class XmlSheetValidator {
         return "\"" + path + "\"";
     }
 
-    public static boolean isValidSheetSize(STLSheet sheet) {
+    public static void validateSheetSize(STLSheet sheet) {
         STLLayout layout = sheet.getSTLLayout();
         int rows = layout.getRows();
         int columns = layout.getColumns();
+        if(rows < 1 || rows > 50) {
+            throw new IllegalArgumentException("Invalid number of rows: " + rows + ". The number of rows must be between 1 and 50.");
+        }
 
-        return rows >= 1 && rows <= 50 && columns >= 1 && columns <= 20;
+        if ( columns < 1 || columns > 20){
+            throw new IllegalArgumentException("Invalid number of columns: " + columns + ". The number of columns must be between 1 and 20.");
+        }
     }
 
-    private static boolean areCellsWithinBounds(STLSheet sheet) {
+    public static void validateCellsWithinBounds(STLSheet sheet) {
         STLLayout layout = sheet.getSTLLayout();
         int maxRows = layout.getRows();
         int maxColumns = layout.getColumns();
+        String maxCellID = ("A" + maxColumns) + String.valueOf(maxRows);
 
         for (STLCell cell : sheet.getSTLCells().getSTLCell()) {
             int row = cell.getRow();
             int column = columnToIndex(cell.getColumn());
 
             if (row < 1 || row > maxRows || column < 1 || column > maxColumns) {
-                return false;
+                throw new IllegalArgumentException(String.format("%s cell is outside the sheet bounds. Cells bounds must be up to %s.",
+                        createCellId(cell), maxCellID));
             }
         }
-        return true;
     }
 
     private static int columnToIndex(String column) {
         return column.charAt(0) - 'A' + 1;
+    }
+
+    public static String createCellId(STLCell cell){
+        return cell.getColumn() + String.valueOf(cell.getRow());
     }
 }
