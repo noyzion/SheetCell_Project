@@ -2,6 +2,8 @@ package shticell.engine.sheet.impl;
 
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.api.EffectiveValue;
+import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
 import shticell.engine.sheet.coordinate.CoordinateImpl;
@@ -30,14 +32,12 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public int getColumnWidthUnits()
-    {
+    public int getColumnWidthUnits() {
         return columnWidthUnits;
     }
 
     @Override
-    public int getRowsHeightUnits()
-    {
+    public int getRowsHeightUnits() {
         return rowsHeightUnits;
     }
 
@@ -117,6 +117,7 @@ public class SheetImpl implements Sheet {
 
         return outputString.toString();
     }
+
     public static String centerText(String text, int width) {
         if (text == null || width <= text.length()) {
             return text;
@@ -127,4 +128,31 @@ public class SheetImpl implements Sheet {
         return String.format(format, "", text, "");
     }
 
+    @Override
+    public void onCellUpdated(String originalValue, Coordinate coordinate) {
+
+        Cell cell = cells.get(coordinate);
+        cell.setOriginalValue(originalValue);
+
+        if (cell.getEffectiveValue() == null) {
+            cell.setEffectiveValue( new EffectiveValueImp(coordinate));
+        }
+        cell.getEffectiveValue().calculateValue(this, originalValue);
+
+        if (!cell.isInBounds()) {
+            throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
+        }
+
+        for (Coordinate cord : cell.getAffectedCells()) {
+            Cell affectedCell = getCell(cord);
+            if (affectedCell != null) {
+                affectedCell.getEffectiveValue().calculateValue(this, affectedCell.getOriginalValue());
+                if (!affectedCell.isInBounds()) {
+                    throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
+                }
+                affectedCell.updateVersion();
+            }
+        }
+
+    }
 }

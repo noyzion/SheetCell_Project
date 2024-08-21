@@ -58,12 +58,11 @@ public class XmlSheetLoader {
         for (STLCell stlCell : stlCells.getSTLCell()) {
             String stringCord = stlCell.getColumn() + String.valueOf(stlCell.getRow());
             Coordinate cord = CoordinateParser.parse(stringCord);
-            Cell newCell = new CellImpl(cord,sheet);
+            Cell newCell = new CellImpl(cord,sheet.getColumnWidthUnits(),sheet.getRowsHeightUnits());
             sheet.addCell(newCell);
             String originalValue = stlCell.getSTLOriginalValue();
-            newCell.setOriginalValue(originalValue);
+            sheet.onCellUpdated(originalValue,cord);
         }
-        // Create and return the new Sheet object
         return sheet ;
     }
 }

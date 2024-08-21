@@ -60,7 +60,7 @@ public class EffectiveValueImp implements EffectiveValue {
         }
     }
 
-    private String[] stringTrimer(Sheet sheet, String input) {
+    private String[] stringTrimer(String input) {
         if (input.startsWith("{") && input.endsWith("}")) {
             input = input.substring(1, input.length() - 1).trim();
         }
@@ -90,7 +90,7 @@ public class EffectiveValueImp implements EffectiveValue {
         }
         result.add(currentElement.toString().trim());
 
-        String operator = result.remove(0);
+        String operator = result.removeFirst();
 
         // Convert to array
         String[] operatorAndArgs = new String[result.size() + 1];
@@ -107,10 +107,10 @@ public class EffectiveValueImp implements EffectiveValue {
         List<Expression> args = new ArrayList<>();
 
         for (int i = 1; i < expression.length; i++) {
-            args.add(stringToExpression(sheet, expression[i]));
+            args.add(stringToExpression( sheet,expression[i]));
         }
-        Expression res = getExpression(sheet, operator, args);
-        ;
+        Expression res = getExpression( sheet ,operator, args);
+
 
 
         this.expressionName = res.getOperationName();
@@ -170,7 +170,7 @@ public class EffectiveValueImp implements EffectiveValue {
     private Expression stringToExpression(Sheet sheet, String input) {
 
         if (input.startsWith("{") && input.endsWith("}")) {
-            return createExpression(sheet, stringTrimer(sheet, input));
+            return createExpression( sheet,stringTrimer(input));
         } else {
             try {
                 return new NumberExpression(Double.parseDouble(input));

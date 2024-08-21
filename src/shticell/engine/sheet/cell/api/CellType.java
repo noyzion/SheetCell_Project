@@ -10,7 +10,7 @@ public enum CellType {
     BOOLEAN(Boolean.class),
     EXPRESSION(Expression.class);
 
-    private Class<?> type;
+    private final Class<?> type;
 
     CellType(Class<?> type) {
         this.type = type;

@@ -5,21 +5,24 @@ import shticell.engine.sheet.coordinate.Coordinate;
 
 public interface Sheet {
 
-    public void updateVersion();
+    void updateVersion();
 
-    public int getVersion();
+    int getVersion();
 
-    public String getSheetName();
+    String getSheetName();
 
-    public void addCell(Cell newCell);
+    void addCell(Cell newCell);
 
-    public Cell getCell(Coordinate coordinate);
+    Cell getCell(Coordinate coordinate);
 
-    public int getRowSize();
+    int getRowSize();
 
-    public int getColSize();
+    int getColSize();
 
-    public int getColumnWidthUnits();
+    int getColumnWidthUnits();
 
-    public int getRowsHeightUnits();
+    int getRowsHeightUnits();
+
+    void onCellUpdated(String originalValue, Coordinate coordinate);
+
 }

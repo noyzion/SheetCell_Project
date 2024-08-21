@@ -6,27 +6,28 @@ import java.util.List;
 
 public interface Cell {
 
-    public Coordinate getCoordinate();
+    Coordinate getCoordinate();
 
     boolean isInBounds();
 
-    public String getOriginalValue();
+    String getOriginalValue();
 
-    public void setOriginalValue(String value);
+    void setOriginalValue(String value);
 
-    public EffectiveValue getEffectiveValue();
+    EffectiveValue getEffectiveValue();
 
-    public int getVersion();
+    void setEffectiveValue(EffectiveValue value);
 
-    public List<Coordinate> getRelatedCells();
+    int getVersion();
 
-    public List<Coordinate> getAffectedCells();
+    List<Coordinate> getRelatedCells();
 
-    public void addCellToAffectedCells(Coordinate coordinate);
+    List<Coordinate> getAffectedCells();
 
-    public void addCellToRelatedCells(Coordinate coordinate);
+    void addCellToAffectedCells(Coordinate coordinate);
 
-    public void updateVersion();
+    void addCellToRelatedCells(Coordinate coordinate);
 
+    void updateVersion();
 
-    }
+}

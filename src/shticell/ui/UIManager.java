@@ -26,7 +26,7 @@ public class UIManager {
     }
 
     private void displaySpreadsheet() {
-System.out.println(sheet.toString());
+        System.out.println(sheet.toString());
     }
 
     private void displaySingleCell() {
@@ -70,13 +70,13 @@ System.out.println(sheet.toString());
             System.out.println("Cell at: " + coordinate.toString());
             System.out.println("Original value: " + cell.getOriginalValue());
             System.out.println("Effective value: " + cell.getEffectiveValue());
-            cell.setOriginalValue(newOriginalValue);
+sheet.onCellUpdated(newOriginalValue,cell.getCoordinate());
+
         } else {
             System.out.println("Cell at: " + coordinate.toString() + " is empty");
-            cell = new CellImpl(coordinate, sheet);
+            cell = new CellImpl(coordinate,sheet.getColumnWidthUnits(),sheet.getRowsHeightUnits());
             sheet.addCell(cell);
-            cell.setOriginalValue(newOriginalValue);
-            sheet.addCell(cell);
+            sheet.onCellUpdated(newOriginalValue,coordinate);
         }
         cell.updateVersion();
         sheet.updateVersion();
