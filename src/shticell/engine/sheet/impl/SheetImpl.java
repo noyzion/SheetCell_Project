@@ -4,6 +4,7 @@ import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
+import shticell.engine.sheet.coordinate.CoordinateImpl;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,13 +15,30 @@ public class SheetImpl implements Sheet {
     private int version;
     private final int rowSize;
     private final int columnSize;
+    private final int columnWidthUnits;
+    private final int rowsHeightUnits;
 
-    public SheetImpl(String sheetName, int rowSize, int columnSize) {
+
+    public SheetImpl(String sheetName, int rowSize, int columnSize, int columnWidthUnits, int rowsHeightUnits) {
         this.sheetName = sheetName;
         this.version = 1;
         this.cells = new HashMap<Coordinate, Cell>();
         this.rowSize = rowSize;
         this.columnSize = columnSize;
+        this.columnWidthUnits = columnWidthUnits;
+        this.rowsHeightUnits = rowsHeightUnits;
+    }
+
+    @Override
+    public int getColumnWidthUnits()
+    {
+        return columnWidthUnits;
+    }
+
+    @Override
+    public int getRowsHeightUnits()
+    {
+        return rowsHeightUnits;
     }
 
     @Override
@@ -65,35 +83,48 @@ public class SheetImpl implements Sheet {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Sheet name: ").append(sheetName).append("\n")
-                .append("sheet version is ").append(version).append("\n");
-        sb.append("   ");
+        StringBuilder outputString = new StringBuilder();
+
+        int validColumnWidth = Math.max(columnWidthUnits, 1);
+
+        outputString.append("   | ");
+
         for (int col = 0; col < columnSize; col++) {
-            sb.append(String.format("%-5s", (char) ('A' + col))); // Column headers
-            if (col < columnSize - 1) {
-                sb.append("|");
-            }
+            String colHeader = String.valueOf((char) ('A' + col));
+            String centeredColHeader = centerText(colHeader, validColumnWidth);
+            outputString.append(centeredColHeader).append("| ");
         }
-        sb.append("\n");
+        outputString.append("\n");
 
         for (int row = 0; row < rowSize; row++) {
-            sb.append(String.format("%02d ", row + 1));
+            String rowHeader = String.format("%02d | ", row + 1);
+            outputString.append(rowHeader);
+
             for (int col = 0; col < columnSize; col++) {
-                Coordinate coordinate = CoordinateFactory.createCoordinate(this, row, col);
-                Cell cell = getCell(coordinate);
-                String cellValue = (cell != null && cell.getEffectiveValue().getValue() != null)
-                        ? cell.getEffectiveValue().getValue().toString()
-                        : "";
-                sb.append(String.format("%-5s", cellValue));
-                if (col < columnSize - 1) {
-                    sb.append("|");
-                }
+                Coordinate coordinate = new CoordinateImpl(row, col);
+                String cellValue = cells.containsKey(coordinate) ? cells.get(coordinate).getEffectiveValue().getValue().toString() : "";
+
+                String centeredCellValue = centerText(cellValue, validColumnWidth);
+                outputString.append(centeredCellValue).append("| ");
             }
-            sb.append("\n");
+
+            outputString.append("\n");
+
+            for (int i = 1; i < rowsHeightUnits; i++) {
+                outputString.append(String.format("%" + (3 + validColumnWidth * columnSize + columnSize * 2) + "s", " ")).append("\n");
+            }
         }
 
-        return sb.toString();
+        return outputString.toString();
+    }
+    public static String centerText(String text, int width) {
+        if (text == null || width <= text.length()) {
+            return text;
+        }
+
+        int padding = (width - text.length()) / 2;
+        String format = "%" + padding + "s%s%" + (width - padding - text.length()) + "s";
+        return String.format(format, "", text, "");
     }
 
 }

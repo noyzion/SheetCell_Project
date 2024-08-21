@@ -8,6 +8,8 @@ public interface Cell {
 
     public Coordinate getCoordinate();
 
+    boolean isInBounds();
+
     public String getOriginalValue();
 
     public void setOriginalValue(String value);

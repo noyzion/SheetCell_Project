@@ -13,6 +13,7 @@ import shticell.engine.sheet.impl.SheetImpl;
 import shticell.engine.xmlParser.jaxb.STLCell;
 import shticell.engine.xmlParser.jaxb.STLCells;
 import shticell.engine.xmlParser.jaxb.STLSheet;
+import shticell.engine.xmlParser.jaxb.STLSize;
 
 import java.io.File;
 
@@ -46,16 +47,17 @@ public class XmlSheetLoader {
             return null;
         }
 
-        // Convert STLSheet to Sheet
+        int colWidthUnits = stlSheet.getSTLLayout().getSTLSize().getColumnWidthUnits();
+        int rowHeightUnits = stlSheet.getSTLLayout().getSTLSize().getRowsHeightUnits();
         String name = stlSheet.getName();
         int rowSize = stlSheet.getSTLLayout().getRows();
         int columnSize = stlSheet.getSTLLayout().getColumns();
         STLCells stlCells = stlSheet.getSTLCells();
-        Sheet sheet = new SheetImpl(name,rowSize,columnSize);
+        Sheet sheet = new SheetImpl(name,rowSize,columnSize,colWidthUnits,rowHeightUnits);
 
         for (STLCell stlCell : stlCells.getSTLCell()) {
-            String stringCoord = stlCell.getColumn() + String.valueOf(stlCell.getRow());
-            Coordinate cord = CoordinateParser.parse(stringCoord);
+            String stringCord = stlCell.getColumn() + String.valueOf(stlCell.getRow());
+            Coordinate cord = CoordinateParser.parse(stringCord);
             Cell newCell = new CellImpl(cord,sheet);
             sheet.addCell(newCell);
             String originalValue = stlCell.getSTLOriginalValue();

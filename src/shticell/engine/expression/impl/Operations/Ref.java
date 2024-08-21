@@ -21,11 +21,10 @@ public class Ref extends UnaryExpression {
 
     @Override
     protected Object evaluate(Object object) throws NumberFormatException {
-        if (!(object instanceof String)) {
+        if (!(object instanceof String coordinateStr)) {
             throw new IllegalArgumentException("The argument must be a String. Provided: " + object.getClass().getName());
         }
 
-        String coordinateStr = (String) object;
         try {
             this.refCoordinate = CoordinateParser.parse(coordinateStr);
         } catch (ParseException e) {

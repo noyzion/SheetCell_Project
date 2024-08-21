@@ -31,7 +31,7 @@ public class Divide extends BinaryExpression {
         double denominator = (Double) e2;
 
         if (denominator == 0) {
-            return Double.NaN; // Return NaN for division by zero
+            return Double.NaN;
         }
 
         return numerator / denominator;

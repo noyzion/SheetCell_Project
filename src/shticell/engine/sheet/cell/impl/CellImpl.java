@@ -16,10 +16,22 @@ public class CellImpl implements Cell {
     private final List<Coordinate> relatedCells = new ArrayList<>();
     private final List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
+    private final int rowsHeightUnits;
+    private final int columnWidthUnits;
+
+
+    public CellImpl(Coordinate coordinate, Sheet sheet, int rowsHeightUnits, int columnWidthUnits) {
+        this.mySheet = sheet;
+        this.coordinate = coordinate;
+        this.rowsHeightUnits = rowsHeightUnits;
+    this.columnWidthUnits = columnWidthUnits;
+    }
 
     public CellImpl(Coordinate coordinate, Sheet sheet) {
         this.mySheet = sheet;
         this.coordinate = coordinate;
+        this.rowsHeightUnits = mySheet.getRowsHeightUnits();
+        this.columnWidthUnits = mySheet.getColumnWidthUnits();
     }
 
     @Override
@@ -30,15 +42,34 @@ public class CellImpl implements Cell {
     @Override
     public void setOriginalValue(String originalValue) {
         this.originalValue = originalValue;
-        if(effectiveValue == null) {
-            effectiveValue= new EffectiveValueImp(this.coordinate);
+
+        if (effectiveValue == null) {
+            effectiveValue = new EffectiveValueImp(this.coordinate);
         }
+
         effectiveValue.calculateValue(mySheet, originalValue);
-        for (Coordinate cord : affectedCells) {
-            Cell cell = mySheet.getCell(cord);
-            cell.getEffectiveValue().calculateValue(mySheet, cell.getOriginalValue());
-            cell.updateVersion();
+
+        if (!this.isInBounds()) {
+            throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
         }
+
+        for (Coordinate coord : affectedCells) {
+            Cell cell = mySheet.getCell(coord);
+            if (cell != null) {
+                cell.getEffectiveValue().calculateValue(mySheet, cell.getOriginalValue());
+                if (!cell.isInBounds()) {
+                    throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
+                }
+                cell.updateVersion();
+            }
+        }
+    }
+
+    @Override
+    public boolean isInBounds()
+    {
+        int widthLength = this.effectiveValue.getValue().toString().length();
+        return widthLength < this.columnWidthUnits;
     }
 
     @Override

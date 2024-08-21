@@ -89,7 +89,6 @@ System.out.println(sheet.toString());
 
     public void start() {
 
-        Sheet sheet = new SheetImpl("First sheet", 5, 5);
         boolean exit = false;
 
         while (!exit) {

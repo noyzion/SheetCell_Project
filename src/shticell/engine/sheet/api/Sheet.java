@@ -18,4 +18,8 @@ public interface Sheet {
     public int getRowSize();
 
     public int getColSize();
+
+    public int getColumnWidthUnits();
+
+    public int getRowsHeightUnits();
 }
