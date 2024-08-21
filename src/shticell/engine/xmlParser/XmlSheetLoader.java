@@ -13,7 +13,6 @@ import shticell.engine.sheet.impl.SheetImpl;
 import shticell.engine.xmlParser.jaxb.STLCell;
 import shticell.engine.xmlParser.jaxb.STLCells;
 import shticell.engine.xmlParser.jaxb.STLSheet;
-import shticell.engine.xmlParser.jaxb.STLSize;
 
 import java.io.File;
 
@@ -56,7 +55,7 @@ public class XmlSheetLoader {
         Sheet sheet = new SheetImpl(name,rowSize,columnSize,colWidthUnits,rowHeightUnits);
 
         for (STLCell stlCell : stlCells.getSTLCell()) {
-            String stringCord = stlCell.getColumn() + String.valueOf(stlCell.getRow());
+            String stringCord = stlCell.getColumn() + stlCell.getRow();
             Coordinate cord = CoordinateParser.parse(stringCord);
             Cell newCell = new CellImpl(cord,sheet.getColumnWidthUnits(),sheet.getRowsHeightUnits());
             sheet.addCell(newCell);

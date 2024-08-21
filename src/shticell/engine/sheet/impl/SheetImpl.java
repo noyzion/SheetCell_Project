@@ -2,7 +2,6 @@ package shticell.engine.sheet.impl;
 
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
-import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
@@ -12,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class SheetImpl implements Sheet {
-    private Map<Coordinate, Cell> cells = new HashMap<Coordinate, Cell>();
+    private final Map<Coordinate, Cell> cells;
     private final String sheetName;
     private int version;
     private final int rowSize;
@@ -24,7 +23,7 @@ public class SheetImpl implements Sheet {
     public SheetImpl(String sheetName, int rowSize, int columnSize, int columnWidthUnits, int rowsHeightUnits) {
         this.sheetName = sheetName;
         this.version = 1;
-        this.cells = new HashMap<Coordinate, Cell>();
+        this.cells = new HashMap<>();
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         this.columnWidthUnits = columnWidthUnits;
@@ -85,34 +84,46 @@ public class SheetImpl implements Sheet {
     public String toString() {
         StringBuilder outputString = new StringBuilder();
 
-        int validColumnWidth = Math.max(columnWidthUnits, 1);
-
+        // Column headers
         outputString.append("   | ");
-
         for (int col = 0; col < columnSize; col++) {
-            String colHeader = String.valueOf((char) ('A' + col));
-            String centeredColHeader = centerText(colHeader, validColumnWidth);
-            outputString.append(centeredColHeader).append("| ");
+            String colHeader = String.format("%-" + columnWidthUnits + "s", (char) ('A' + col));
+            outputString.append(colHeader).append("| ");
         }
         outputString.append("\n");
 
+        // Separator line
+        outputString.append("   | ");
+        outputString.append("-".repeat(columnSize * (columnWidthUnits + 1) + 1)); // Adjusted for column width
+        outputString.append("\n");
+
+        // Rows
         for (int row = 0; row < rowSize; row++) {
+            // Row header
             String rowHeader = String.format("%02d | ", row + 1);
             outputString.append(rowHeader);
 
+            // Cell values
             for (int col = 0; col < columnSize; col++) {
-                Coordinate coordinate = new CoordinateImpl(row, col);
-                String cellValue = cells.containsKey(coordinate) ? cells.get(coordinate).getEffectiveValue().getValue().toString() : "";
+                Coordinate cellCoordinate = CoordinateFactory.createCoordinate(this,row, col);
+                String cellValue = cells.get(cellCoordinate) != null
+                        ? cells.get(cellCoordinate).getEffectiveValue().getValue().toString()
+                        : " ";
 
-                String centeredCellValue = centerText(cellValue, validColumnWidth);
-                outputString.append(centeredCellValue).append("| ");
+                String formattedCellValue = String.format("%-" + columnWidthUnits + "s", cellValue);
+                outputString.append(formattedCellValue).append("| ");
+            }
+
+            // Add additional rows height spacing for visual clarity
+            for (int i = 1; i < rowsHeightUnits; i++) {
+                outputString.append("\n");
+                outputString.append("   | ");
+                for (int col = 0; col < columnSize; col++) {
+                    outputString.append(String.format("%-" + columnWidthUnits + "s", "")).append("| ");
+                }
             }
 
             outputString.append("\n");
-
-            for (int i = 1; i < rowsHeightUnits; i++) {
-                outputString.append(String.format("%" + (3 + validColumnWidth * columnSize + columnSize * 2) + "s", " ")).append("\n");
-            }
         }
 
         return outputString.toString();

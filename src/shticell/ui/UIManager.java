@@ -6,7 +6,6 @@ import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
-import shticell.engine.sheet.impl.SheetImpl;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
 import java.util.Optional;
