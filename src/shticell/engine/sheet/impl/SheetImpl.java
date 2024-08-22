@@ -85,7 +85,6 @@ public class SheetImpl implements Sheet {
     public String toString() {
         StringBuilder outputString = new StringBuilder();
 
-        // Column headers
         outputString.append("   | ");
         for (int col = 0; col < columnSize; col++) {
             String colHeader = String.format("%-" + columnWidthUnits + "s", (char) ('A' + col));
@@ -93,29 +92,29 @@ public class SheetImpl implements Sheet {
         }
         outputString.append("\n");
 
-        // Separator line
         outputString.append("   | ");
         outputString.append("-".repeat(columnSize * (columnWidthUnits + 1) + 1)); // Adjusted for column width
         outputString.append("\n");
 
-        // Rows
         for (int row = 0; row < rowSize; row++) {
-            // Row header
             String rowHeader = String.format("%02d | ", row + 1);
             outputString.append(rowHeader);
 
-            // Cell values
             for (int col = 0; col < columnSize; col++) {
                 Coordinate cellCoordinate = CoordinateFactory.createCoordinate(this, row, col);
                 String cellValue = cells.get(cellCoordinate) != null
                         ? cells.get(cellCoordinate).getEffectiveValue().getValue().toString()
                         : " ";
 
+                // Truncate cellValue if it exceeds the column width
+                if (cellValue.length() > columnWidthUnits) {
+                    cellValue = cellValue.substring(0, columnWidthUnits);
+                }
+
                 String formattedCellValue = String.format("%-" + columnWidthUnits + "s", cellValue);
                 outputString.append(formattedCellValue).append("| ");
             }
 
-            // Add additional rows height spacing for visual clarity
             for (int i = 1; i < rowsHeightUnits; i++) {
                 outputString.append("\n");
                 outputString.append("   | ");
@@ -126,7 +125,6 @@ public class SheetImpl implements Sheet {
 
             outputString.append("\n");
         }
-
         return outputString.toString();
     }
 
@@ -152,12 +150,7 @@ public class SheetImpl implements Sheet {
         }
         cell.getEffectiveValue().calculateValue(this, originalValue);
 
-        if (!cell.isInBounds()) {
-            throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
-        }
         updateCells();
-
-
     }
 
 
@@ -174,12 +167,10 @@ public class SheetImpl implements Sheet {
         Map<Cell, Integer> inDegree = new HashMap<>();
         List<Cell> orderedCells = new ArrayList<>();
 
-        // Initialize in-degree map for all cells
         for (Cell cell : cells.values()) {
             inDegree.put(cell, 0);
         }
 
-        // Build the graph based on edges
         for (Edge edge : edges) {
             Cell fromCell = cells.get(edge.getFrom());
             Cell toCell = cells.get(edge.getTo());
@@ -190,10 +181,8 @@ public class SheetImpl implements Sheet {
             }
         }
 
-        // Topological sort (Kahn's algorithm)
         Queue<Cell> queue = new LinkedList<>();
 
-        // Add cells with no incoming edges (in-degree 0)
         for (Map.Entry<Cell, Integer> entry : inDegree.entrySet()) {
             if (entry.getValue() == 0) {
                 queue.add(entry.getKey());
@@ -204,7 +193,6 @@ public class SheetImpl implements Sheet {
             Cell current = queue.poll();
             orderedCells.add(current);
 
-            // Process neighbors
             List<Cell> neighbors = graph.getOrDefault(current, new ArrayList<>());
             for (Cell neighbor : neighbors) {
                 int newInDegree = inDegree.get(neighbor) - 1;
@@ -216,7 +204,6 @@ public class SheetImpl implements Sheet {
             }
         }
 
-        // If orderedCells size is not equal to the number of cells involved in edges, there is a cycle
         if (orderedCells.size() != inDegree.size()) {
             throw new IllegalStateException("Circular dependency detected");
         }
