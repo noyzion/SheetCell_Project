@@ -21,7 +21,7 @@ public class CellImpl implements Cell {
     public CellImpl(Coordinate coordinate, int rowsHeightUnits, int columnWidthUnits) {
         this.coordinate = coordinate;
         this.rowsHeightUnits = rowsHeightUnits;
-    this.columnWidthUnits = columnWidthUnits;
+        this.columnWidthUnits = columnWidthUnits;
     }
 
     @Override
@@ -102,7 +102,7 @@ public class CellImpl implements Cell {
                         "Last Version Update: %d%n" +
                         "Related Cells: %s%n" +
                         "Affected Cells: %s",
-                coordinate != null ? coordinate.toString() : "N/A",
+                coordinate != null ? coordinate.getStringCord() : "N/A",
                 effectiveValue != null ? effectiveValue.getValue() : "N/A",
                 originalValue != null ? originalValue : "N/A",
                 lastVersionUpdate,

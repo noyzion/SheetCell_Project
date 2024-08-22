@@ -26,7 +26,7 @@ public class CoordinateParser {
                 throw new ParseException("Invalid coordinate string: " + coordinateString, i);
             }
 
-            return new CoordinateImpl(row - 1, col - 1);
+            return new CoordinateImpl(row - 1, col - 1,coordinateString);
         }
     }
 

@@ -5,10 +5,22 @@ public class CoordinateImpl implements Coordinate {
 
     private final int row;
     private final int column;
+    private String stringCord;
+
+    public CoordinateImpl(int row, int column, String stringCord) {
+        this.row = row;
+        this.column = column;
+        this.stringCord = stringCord;
+    }
 
     public CoordinateImpl(int row, int column) {
         this.row = row;
         this.column = column;
+    }
+
+    @Override
+    public String getStringCord() {
+        return stringCord;
     }
 
     @Override

@@ -4,9 +4,7 @@ import shticell.engine.menu.Menu;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
-import shticell.engine.sheet.coordinate.Coordinate;
-import shticell.engine.sheet.coordinate.CoordinateParser;
-import shticell.engine.sheet.coordinate.ParseException;
+import shticell.engine.sheet.coordinate.*;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
 import java.util.Optional;
@@ -32,7 +30,10 @@ public class UIManager implements Menu {
 
     @Override
     public void displaySingleCell() {
-
+        Coordinate cord = getCellCoordinate();
+        if (sheet.getCell(cord) == null)
+            System.out.println("This cell is empty!");
+        System.out.println(sheet.getCell(getCellCoordinate()));
     }
 
     public int getUserChoice(int range) {
@@ -102,7 +103,7 @@ public class UIManager implements Menu {
                 case 1 -> getXmlFile();
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
-                case 4 -> updateSingleCell(getCellCoordinateToChange(sheet), getNewValueForCell());
+                case 4 -> updateSingleCell(getCellCoordinate(), getNewValueForCell());
                 //case 5 -> displayVersions();
                 case 6 -> exit = true;
                 default -> System.out.println("Invalid choice. Please try again.");
@@ -116,7 +117,7 @@ public class UIManager implements Menu {
         System.out.println("Exiting program. Goodbye!");
     }
 
-    private Coordinate getCellCoordinateToChange(Sheet sheet) {
+    private Coordinate getCellCoordinate() {
         Scanner scanner = new Scanner(System.in);
         Coordinate coordinate = null;
         boolean validInput = false;
@@ -125,7 +126,6 @@ public class UIManager implements Menu {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
             String input = scanner.nextLine().trim();
 
-            // Validate the input format
             if (!isValidCoordinateFormat(input)) {
                 System.out.println("Invalid format. Please enter the coordinate in the format (e.g., A5).");
                 continue;
