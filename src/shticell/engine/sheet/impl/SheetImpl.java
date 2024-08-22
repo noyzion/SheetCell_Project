@@ -1,17 +1,18 @@
 package shticell.engine.sheet.impl;
 
 import shticell.engine.sheet.api.Sheet;
+import shticell.engine.sheet.api.SheetReadActions;
+import shticell.engine.sheet.api.SheetUpdateActions;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
-import shticell.engine.sheet.coordinate.CoordinateImpl;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SheetImpl implements Sheet {
     private final Map<Coordinate, Cell> cells;
+    private final List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
     private final String sheetName;
     private int version;
     private final int rowSize;
@@ -105,7 +106,7 @@ public class SheetImpl implements Sheet {
 
             // Cell values
             for (int col = 0; col < columnSize; col++) {
-                Coordinate cellCoordinate = CoordinateFactory.createCoordinate(this,row, col);
+                Coordinate cellCoordinate = CoordinateFactory.createCoordinate(this, row, col);
                 String cellValue = cells.get(cellCoordinate) != null
                         ? cells.get(cellCoordinate).getEffectiveValue().getValue().toString()
                         : " ";
@@ -139,6 +140,7 @@ public class SheetImpl implements Sheet {
         return String.format(format, "", text, "");
     }
 
+
     @Override
     public void onCellUpdated(String originalValue, Coordinate coordinate) {
 
@@ -146,24 +148,86 @@ public class SheetImpl implements Sheet {
         cell.setOriginalValue(originalValue);
 
         if (cell.getEffectiveValue() == null) {
-            cell.setEffectiveValue( new EffectiveValueImp(coordinate));
+            cell.setEffectiveValue(new EffectiveValueImp(coordinate));
         }
         cell.getEffectiveValue().calculateValue(this, originalValue);
 
         if (!cell.isInBounds()) {
             throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
         }
+        updateCells();
 
-        for (Coordinate cord : cell.getAffectedCells()) {
-            Cell affectedCell = getCell(cord);
-            if (affectedCell != null) {
-                affectedCell.getEffectiveValue().calculateValue(this, affectedCell.getOriginalValue());
-                if (!affectedCell.isInBounds()) {
-                    throw new IndexOutOfBoundsException("The content of cell at coordinate " + coordinate + " exceeds the allowed cell size.");
-                }
-                affectedCell.updateVersion();
+
+    }
+
+
+    @Override
+    public void updateCells() {
+        List<Cell> sortedCells = orderCellsForCalculation();
+        for (Cell cell : sortedCells) {
+            cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
+        }
+    }
+
+    private List<Cell> orderCellsForCalculation() {
+        Map<Cell, List<Cell>> graph = new HashMap<>();
+        Map<Cell, Integer> inDegree = new HashMap<>();
+        List<Cell> orderedCells = new ArrayList<>();
+
+        // Initialize in-degree map for all cells
+        for (Cell cell : cells.values()) {
+            inDegree.put(cell, 0);
+        }
+
+        // Build the graph based on edges
+        for (Edge edge : edges) {
+            Cell fromCell = cells.get(edge.getFrom());
+            Cell toCell = cells.get(edge.getTo());
+
+            if (fromCell != null && toCell != null) {
+                graph.computeIfAbsent(fromCell, k -> new ArrayList<>()).add(toCell);
+                inDegree.put(toCell, inDegree.get(toCell) + 1);
             }
         }
 
+        // Topological sort (Kahn's algorithm)
+        Queue<Cell> queue = new LinkedList<>();
+
+        // Add cells with no incoming edges (in-degree 0)
+        for (Map.Entry<Cell, Integer> entry : inDegree.entrySet()) {
+            if (entry.getValue() == 0) {
+                queue.add(entry.getKey());
+            }
+        }
+
+        while (!queue.isEmpty()) {
+            Cell current = queue.poll();
+            orderedCells.add(current);
+
+            // Process neighbors
+            List<Cell> neighbors = graph.getOrDefault(current, new ArrayList<>());
+            for (Cell neighbor : neighbors) {
+                int newInDegree = inDegree.get(neighbor) - 1;
+                inDegree.put(neighbor, newInDegree);
+
+                if (newInDegree == 0) {
+                    queue.add(neighbor);
+                }
+            }
+        }
+
+        // If orderedCells size is not equal to the number of cells involved in edges, there is a cycle
+        if (orderedCells.size() != inDegree.size()) {
+            throw new IllegalStateException("Circular dependency detected");
+        }
+
+        return orderedCells;
     }
+
+
+    @Override
+    public void addEdge(Edge edge) {
+        edges.add(edge);
+    }
+
 }

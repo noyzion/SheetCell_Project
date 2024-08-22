@@ -14,7 +14,7 @@ public class CoordinateFactory {
         return coordinate.getRow() + ":" + coordinate.getColumn();
     }
 
-    public static Coordinate createCoordinate(Sheet sheet,int row, int column) throws IndexOutOfBoundsException {
+    public static Coordinate createCoordinate(Sheet sheet, int row, int column) throws IndexOutOfBoundsException {
 
         if(row< 0 || row > sheet.getRowSize()
         || column < 0 || column > sheet.getColSize()) {

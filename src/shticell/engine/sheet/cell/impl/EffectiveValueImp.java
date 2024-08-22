@@ -8,6 +8,7 @@ import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.impl.Edge;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -120,6 +121,8 @@ public class EffectiveValueImp implements EffectiveValue {
             Coordinate ref = ((Ref) res).getRefCoordinate();
             sheet.getCell(coordinate).addCellToRelatedCells(ref);
             sheet.getCell(ref).addCellToAffectedCells(coordinate);
+            Edge edge = new Edge(ref, coordinate);
+            sheet.addEdge(edge);
         }
 
         return res;

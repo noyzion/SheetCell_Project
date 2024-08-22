@@ -1,6 +1,5 @@
 package shticell.engine.sheet.cell.impl;
 
-import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;

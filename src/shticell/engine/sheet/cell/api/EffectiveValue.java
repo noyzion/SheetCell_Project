@@ -7,7 +7,7 @@ public interface EffectiveValue {
 
     Object getValue();
 
-    void calculateValue(Sheet sheet,String originalValue);
+    void calculateValue(Sheet sheet, String originalValue);
 
     String getExpressionName();
 

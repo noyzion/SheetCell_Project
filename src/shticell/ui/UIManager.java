@@ -1,5 +1,6 @@
 package shticell.ui;
 
+import shticell.engine.menu.Menu;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.impl.CellImpl;
@@ -11,7 +12,7 @@ import shticell.engine.xmlParser.XmlSheetLoader;
 import java.util.Optional;
 import java.util.Scanner;
 
-public class UIManager {
+public class UIManager implements Menu {
 
     Sheet sheet;
 
@@ -24,11 +25,13 @@ public class UIManager {
         System.out.println("(6) Exit");
     }
 
-    private void displaySpreadsheet() {
+    @Override
+    public void displaySpreadsheet() {
         System.out.println(sheet.toString());
     }
 
-    private void displaySingleCell() {
+    @Override
+    public void displaySingleCell() {
 
     }
 
@@ -60,22 +63,23 @@ public class UIManager {
         return userChoice;
     }
 
-    private void updateSingleCell(Sheet sheet, Coordinate coordinate, String newOriginalValue) {
+    @Override
+    public void updateSingleCell(Coordinate coordinate, String newOriginalValue) {
 
         Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
         Cell cell;
         if (optionalCell.isPresent()) {
             cell = optionalCell.get();
-            System.out.println("Cell at: " + coordinate.toString());
+            System.out.println("Cell at: " + coordinate);
             System.out.println("Original value: " + cell.getOriginalValue());
             System.out.println("Effective value: " + cell.getEffectiveValue());
-sheet.onCellUpdated(newOriginalValue,cell.getCoordinate());
+            sheet.onCellUpdated(newOriginalValue, cell.getCoordinate());
 
         } else {
             System.out.println("Cell at: " + coordinate.toString() + " is empty");
-            cell = new CellImpl(coordinate,sheet.getColumnWidthUnits(),sheet.getRowsHeightUnits());
+            cell = new CellImpl(coordinate, sheet.getColumnWidthUnits(), sheet.getRowsHeightUnits());
             sheet.addCell(cell);
-            sheet.onCellUpdated(newOriginalValue,coordinate);
+            sheet.onCellUpdated(newOriginalValue, coordinate);
         }
         cell.updateVersion();
         sheet.updateVersion();
@@ -98,7 +102,7 @@ sheet.onCellUpdated(newOriginalValue,cell.getCoordinate());
                 case 1 -> getXmlFile();
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
-                case 4 -> updateSingleCell(sheet, getCellCoordinateToChange(sheet), getNewValueForCell());
+                case 4 -> updateSingleCell(getCellCoordinateToChange(sheet), getNewValueForCell());
                 //case 5 -> displayVersions();
                 case 6 -> exit = true;
                 default -> System.out.println("Invalid choice. Please try again.");
@@ -154,7 +158,8 @@ sheet.onCellUpdated(newOriginalValue,cell.getCoordinate());
         return scanner.nextLine();
     }
 
-    private void getXmlFile() {
+    @Override
+    public void getXmlFile() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter the full path to the XML file: ");
         System.out.println("(Example for Windows: C:\\path\\to\\your\\file.xml)\n");
