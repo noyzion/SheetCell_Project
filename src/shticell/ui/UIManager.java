@@ -1,18 +1,18 @@
 package shticell.ui;
 
+import shticell.engine.DTO.CellDTO;
+import shticell.engine.DTO.CoordinateDTO;
+import shticell.engine.logic.impl.LogicImpl;
 import shticell.engine.menu.Menu;
-import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
-import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.*;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
-import java.util.Optional;
 import java.util.Scanner;
 
 public class UIManager implements Menu {
 
-    Sheet sheet;
+    private final LogicImpl logic = new LogicImpl();
 
     private void printMenu() {
         System.out.println("(1) Read File");
@@ -25,23 +25,31 @@ public class UIManager implements Menu {
 
     @Override
     public void displaySpreadsheet() {
-        System.out.println(sheet.toString());
+        if (logic.getSheet() != null) {
+            System.out.println(logic.getSheet().toString());
+        } else {
+            System.out.println("No sheet loaded.");
+        }
     }
 
     @Override
     public void displaySingleCell() {
-        Coordinate cord = getCellCoordinate();
-        if(sheet.getCell(cord) == null)
-System.out.println("This cell is empty!");
-        System.out.println(sheet.getCell(getCellCoordinate()));
+        CoordinateDTO coordinate = getCellCoordinate();
+        if (coordinate != null) {
+            CellDTO cell = logic.getSheet().getCells().get(coordinate);
+            if (cell != null) {
+                System.out.println(cell.toString());
+            } else {
+                System.out.println("Cell not found.");
+            }
+        }
     }
 
     public int getUserChoice(int range) {
         Scanner scanner = new Scanner(System.in);
-        boolean validInput = false;
         int userChoice = -1;
 
-        while (!validInput) {
+        while (true) {
             System.out.println("Please enter a number between 1 and " + range + ":");
 
             try {
@@ -49,15 +57,13 @@ System.out.println("This cell is empty!");
                 userChoice = Integer.parseInt(userInput);
 
                 if (userChoice >= 1 && userChoice <= range) {
-                    validInput = true;
+                    break;
                 } else {
-                    throw new IllegalArgumentException("Input out of range. Please try again.");
+                    System.out.println("Input out of range. Please try again.");
                 }
 
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
-            } catch (IllegalArgumentException e) {
-                System.out.println(e.getMessage());
             }
         }
 
@@ -65,34 +71,30 @@ System.out.println("This cell is empty!");
     }
 
     @Override
-    public void updateSingleCell(Coordinate coordinate, String newOriginalValue) {
-
-        Optional<Cell> optionalCell = Optional.ofNullable(sheet.getCell(coordinate));
-        Cell cell;
-        if (optionalCell.isPresent()) {
-            cell = optionalCell.get();
-            System.out.println("Cell at: " + coordinate);
-            System.out.println("Original value: " + cell.getOriginalValue());
-            System.out.println("Effective value: " + cell.getEffectiveValue());
-            sheet.onCellUpdated(newOriginalValue, cell.getCoordinate());
-
+    public void updateSingleCell(CoordinateDTO coordinateDTO, String newOriginalValue) {
+        if (logic.getSheet() != null && coordinateDTO != null) {
+            try {
+                Coordinate coordinate = toCoordinate(coordinateDTO);
+                logic.setCellValue(coordinate, newOriginalValue);
+                System.out.println("Cell updated successfully.");
+            } catch (Exception e) {
+                System.out.println("Error updating cell: " + e.getMessage());
+            }
         } else {
-            System.out.println("Cell at: " + coordinate.toString() + " is empty");
-            cell = new CellImpl(coordinate, sheet.getColumnWidthUnits(), sheet.getRowsHeightUnits());
-            sheet.addCell(cell);
-            sheet.onCellUpdated(newOriginalValue, coordinate);
+            System.out.println("Sheet or coordinate is not valid.");
         }
-        cell.updateVersion();
-        sheet.updateVersion();
-        System.out.println("Cell at: " + coordinate);
-        System.out.println("Original value: " + cell.getOriginalValue());
-        System.out.println("Effective value: " + cell.getEffectiveValue().getValue());
-        System.out.println(sheet);
+    }
 
+    // Utility method to convert CoordinateDTO to Coordinate
+    private Coordinate toCoordinate(CoordinateDTO coordinateDTO) {
+        if (coordinateDTO == null) {
+            throw new IllegalArgumentException("CoordinateDTO cannot be null.");
+        }
+        // Assuming CoordinateImpl has a constructor that matches the parameters
+        return new CoordinateImpl(coordinateDTO.getRow(), coordinateDTO.getColumn());
     }
 
     public void start() {
-
         boolean exit = false;
 
         while (!exit) {
@@ -104,7 +106,7 @@ System.out.println("This cell is empty!");
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
                 case 4 -> updateSingleCell(getCellCoordinate(), getNewValueForCell());
-                //case 5 -> displayVersions();
+                case 5 -> displayVersions(); // Implement if needed
                 case 6 -> exit = true;
                 default -> System.out.println("Invalid choice. Please try again.");
             }
@@ -117,12 +119,11 @@ System.out.println("This cell is empty!");
         System.out.println("Exiting program. Goodbye!");
     }
 
-    private Coordinate getCellCoordinate() {
+    private CoordinateDTO getCellCoordinate() {
         Scanner scanner = new Scanner(System.in);
-        Coordinate coordinate = null;
-        boolean validInput = false;
+        CoordinateDTO coordinate = null;
 
-        while (!validInput) {
+        while (true) {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
             String input = scanner.nextLine().trim();
 
@@ -132,13 +133,14 @@ System.out.println("This cell is empty!");
             }
 
             try {
-                coordinate = CoordinateParser.parse(input);
-                if (coordinate.getRow() < 0 || coordinate.getRow() >= sheet.getRowSize() ||
-                        coordinate.getColumn() < 0 || coordinate.getColumn() >= sheet.getColSize()) {
-                    throw new IndexOutOfBoundsException("Coordinate " + input + " is out of bounds.");
+                coordinate = (CoordinateDTO) CoordinateParser.parse(input);
+                if (coordinate.getRow() < 0 || coordinate.getRow() >= logic.getSheet().getRowSize() ||
+                        coordinate.getColumn() < 0 || coordinate.getColumn() >= logic.getSheet().getColumnSize()) {
+                    System.out.println("Coordinate " + input + " is out of bounds.");
+                } else {
+                    break;
                 }
 
-                validInput = true;
             } catch (IllegalArgumentException | IndexOutOfBoundsException | ParseException e) {
                 System.out.println("Invalid coordinate: " + e.getMessage());
             }
@@ -148,7 +150,6 @@ System.out.println("This cell is empty!");
     }
 
     private boolean isValidCoordinateFormat(String input) {
-        // Regular expression to match format: one or more uppercase letters followed by one or more digits
         return input.matches("[A-Z]+\\d+");
     }
 
@@ -162,10 +163,18 @@ System.out.println("This cell is empty!");
     public void getXmlFile() {
         Scanner scanner = new Scanner(System.in);
         System.out.println("Please enter the full path to the XML file: ");
-        System.out.println("(Example for Windows: C:\\path\\to\\your\\file.xml)\n");
         String filePath = scanner.nextLine();
 
-        this.sheet = XmlSheetLoader.fromXmlFileToObject(filePath);
+        try {
+            logic.addSheet(XmlSheetLoader.fromXmlFileToObject(filePath));
+            System.out.println("Sheet loaded successfully.");
+        } catch (Exception e) {
+            System.out.println("Error loading file: " + e.getMessage());
+        }
+    }
 
+    // Placeholder for displayVersions method
+    private void displayVersions() {
+        // Implement version display logic if needed
     }
 }

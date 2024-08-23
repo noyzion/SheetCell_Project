@@ -13,4 +13,6 @@ public interface EffectiveValue {
 
 
     <T> T extractValueWithExpectation(Class<T> type);
+
+    EffectiveValue copy();
 }

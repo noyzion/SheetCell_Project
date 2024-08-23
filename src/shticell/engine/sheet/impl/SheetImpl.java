@@ -1,9 +1,11 @@
 package shticell.engine.sheet.impl;
 
+import com.sun.tools.xjc.reader.gbind.Graph;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.api.SheetReadActions;
 import shticell.engine.sheet.api.SheetUpdateActions;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
@@ -12,7 +14,7 @@ import java.util.*;
 
 public class SheetImpl implements Sheet {
     private final Map<Coordinate, Cell> cells;
-    private final List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
+    private List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
     private final String sheetName;
     private int version;
     private final int rowSize;
@@ -30,6 +32,24 @@ public class SheetImpl implements Sheet {
         this.columnWidthUnits = columnWidthUnits;
         this.rowsHeightUnits = rowsHeightUnits;
     }
+
+    public SheetImpl(SheetImpl other) {
+        this.sheetName = other.sheetName;
+        this.columnWidthUnits = other.columnWidthUnits;
+        this.rowsHeightUnits = other.rowsHeightUnits;
+        this.rowSize = other.rowSize;
+        this.columnSize = other.columnSize;
+
+        // Deep copy of cells
+        this.cells = new HashMap<>();
+        for (Map.Entry<Coordinate, Cell> entry : other.cells.entrySet()) {
+            this.cells.put(entry.getKey(), new CellImpl((CellImpl) entry.getValue()));
+        }
+
+        // Deep copy of edges
+        this.edges = new ArrayList<>(other.edges); // Assuming Edge has a proper copy mechanism
+    }
+
 
     @Override
     public int getColumnWidthUnits() {
@@ -79,63 +99,6 @@ public class SheetImpl implements Sheet {
 
     public Cell removeCell(Coordinate coordinate) {
         return cells.remove(coordinate);
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder outputString = new StringBuilder();
-
-        outputString.append("   | ");
-        for (int col = 0; col < columnSize; col++) {
-            String colHeader = String.format("%-" + columnWidthUnits + "s", (char) ('A' + col));
-            outputString.append(colHeader).append("| ");
-        }
-        outputString.append("\n");
-
-        outputString.append("   | ");
-        outputString.append("-".repeat(columnSize * (columnWidthUnits + 1) + 1)); // Adjusted for column width
-        outputString.append("\n");
-
-        for (int row = 0; row < rowSize; row++) {
-            String rowHeader = String.format("%02d | ", row + 1);
-            outputString.append(rowHeader);
-
-            for (int col = 0; col < columnSize; col++) {
-                Coordinate cellCoordinate = CoordinateFactory.createCoordinate(this, row, col);
-                String cellValue = cells.get(cellCoordinate) != null
-                        ? cells.get(cellCoordinate).getEffectiveValue().getValue().toString()
-                        : " ";
-
-                // Truncate cellValue if it exceeds the column width
-                if (cellValue.length() > columnWidthUnits) {
-                    cellValue = cellValue.substring(0, columnWidthUnits);
-                }
-
-                String formattedCellValue = String.format("%-" + columnWidthUnits + "s", cellValue);
-                outputString.append(formattedCellValue).append("| ");
-            }
-
-            for (int i = 1; i < rowsHeightUnits; i++) {
-                outputString.append("\n");
-                outputString.append("   | ");
-                for (int col = 0; col < columnSize; col++) {
-                    outputString.append(String.format("%-" + columnWidthUnits + "s", "")).append("| ");
-                }
-            }
-
-            outputString.append("\n");
-        }
-        return outputString.toString();
-    }
-
-    public static String centerText(String text, int width) {
-        if (text == null || width <= text.length()) {
-            return text;
-        }
-
-        int padding = (width - text.length()) / 2;
-        String format = "%" + padding + "s%s%" + (width - padding - text.length()) + "s";
-        return String.format(format, "", text, "");
     }
 
 

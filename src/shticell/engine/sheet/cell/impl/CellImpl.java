@@ -3,6 +3,7 @@ package shticell.engine.sheet.cell.impl;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,8 +12,8 @@ public class CellImpl implements Cell {
     private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
-    private final List<Coordinate> relatedCells = new ArrayList<>();
-    private final List<Coordinate> affectedCells = new ArrayList<>();
+    private  List<Coordinate> relatedCells = new ArrayList<>();
+    private  List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
     private final int rowsHeightUnits;
     private final int columnWidthUnits;
@@ -22,6 +23,16 @@ public class CellImpl implements Cell {
         this.coordinate = coordinate;
         this.rowsHeightUnits = rowsHeightUnits;
         this.columnWidthUnits = columnWidthUnits;
+    }
+    public CellImpl(CellImpl other) {
+        this.coordinate = new CoordinateImpl(other.getCoordinate().getRow(), other.getCoordinate().getRow(), other.getCoordinate().getStringCord()); // Deep copy of Coordinate
+        this.originalValue = other.originalValue;
+        this.effectiveValue = other.effectiveValue != null ? other.effectiveValue.copy() : null; // Assuming EffectiveValue has a copy method
+        this.lastVersionUpdate = other.lastVersionUpdate;
+        this.relatedCells = new ArrayList<>(other.relatedCells); // Deep copy of related cells
+        this.affectedCells = new ArrayList<>(other.affectedCells); // Deep copy of affected cells
+        this.rowsHeightUnits = other.rowsHeightUnits;
+        this.columnWidthUnits = other.columnWidthUnits;
     }
 
     @Override
@@ -89,26 +100,6 @@ public class CellImpl implements Cell {
     @Override
     public List<Coordinate> getAffectedCells() {
         return affectedCells;
-    }
-
-
-    //TODO!
-    @Override
-    public String toString() {
-        return String.format(
-                "Cell coordinates are: %s%n" +
-                        "Effective Value: %s%n" +
-                        "Original Value: %s%n" +
-                        "Last Version Update: %d%n" +
-                        "Related Cells: %s%n" +
-                        "Affected Cells: %s",
-                coordinate != null ? coordinate.getStringCord() : "N/A",
-                effectiveValue != null ? effectiveValue.getValue() : "N/A",
-                originalValue != null ? originalValue : "N/A",
-                lastVersionUpdate,
-                !relatedCells.isEmpty() ? relatedCells.toString() : "[]",
-                !affectedCells.isEmpty() ? affectedCells.toString() : "[]"
-        );
     }
 
 

@@ -39,6 +39,15 @@ public class EffectiveValueImp implements EffectiveValue {
         return expressionName;
     }
 
+    @Override
+    public EffectiveValue copy() {
+        EffectiveValueImp copy = new EffectiveValueImp(this.coordinate);
+        copy.cellType = this.cellType;
+        copy.value = this.value;
+        copy.expressionName = this.expressionName;
+        return copy;
+    }
+
     //TODO!
     @Override
     public <T> T extractValueWithExpectation(Class<T> type) {

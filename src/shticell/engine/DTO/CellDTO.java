@@ -1,5 +1,6 @@
 package shticell.engine.DTO;
 
+import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
 
 import java.util.List;
@@ -7,12 +8,12 @@ import java.util.List;
 public class CellDTO {
     private final CoordinateDTO coordinate;
     private final String originalValue;
-    private final Object effectiveValue;
+    private final EffectiveValue effectiveValue;
     private final int lastVersionUpdate;
     private final List<Coordinate> relatedCells;
     private final List<Coordinate> affectedCells;
 
-    public CellDTO(CoordinateDTO coordinate, String originalValue, Object effectiveValue, int lastVersionUpdate, List<Coordinate> relatedCells, List<Coordinate> affectedCells) {
+    public CellDTO(CoordinateDTO coordinate, String originalValue, EffectiveValue effectiveValue, int lastVersionUpdate, List<Coordinate> relatedCells, List<Coordinate> affectedCells) {
         this.coordinate = coordinate;
         this.originalValue = originalValue;
         this.effectiveValue = effectiveValue;
@@ -29,7 +30,7 @@ public class CellDTO {
         return originalValue;
     }
 
-    public Object getEffectiveValue() {
+    public EffectiveValue getEffectiveValue() {
         return effectiveValue;
     }
 
