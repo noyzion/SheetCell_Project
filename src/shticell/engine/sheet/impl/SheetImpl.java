@@ -217,4 +217,16 @@ public class SheetImpl implements Sheet {
         edges.add(edge);
     }
 
+    @Override
+    public Map<Coordinate, Cell> getCells()
+    {
+        return cells;
+    }
+
+    @Override
+    public List<Edge> getEdges()
+    {
+        return edges;
+    }
+
 }

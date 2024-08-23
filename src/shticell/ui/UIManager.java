@@ -31,8 +31,8 @@ public class UIManager implements Menu {
     @Override
     public void displaySingleCell() {
         Coordinate cord = getCellCoordinate();
-        if (sheet.getCell(cord) == null)
-            System.out.println("This cell is empty!");
+        if(sheet.getCell(cord) == null)
+System.out.println("This cell is empty!");
         System.out.println(sheet.getCell(getCellCoordinate()));
     }
 
