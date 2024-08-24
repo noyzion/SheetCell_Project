@@ -4,7 +4,7 @@ public class CoordinateParser {
 
         public static Coordinate parse(String coordinateString) throws ParseException {
             if (coordinateString == null || coordinateString.isEmpty()) {
-                throw new ParseException("Coordinate string cannot be null or empty.", 0);
+                throw new ParseException("Coordinate input cannot be null or empty.", 0);
             }
 
             coordinateString = coordinateString.toUpperCase().trim();
@@ -23,7 +23,7 @@ public class CoordinateParser {
             }
 
             if (row <= 0 || col <= 0) {
-                throw new ParseException("Invalid coordinate string: " + coordinateString, i);
+                throw new ParseException("Invalid coordinate input: " + coordinateString, i);
             }
 
             return new CoordinateImpl(row-1 , col-1 ,coordinateString);

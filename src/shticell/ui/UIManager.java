@@ -6,10 +6,14 @@ import shticell.engine.DTO.SheetDTO;
 import shticell.engine.logic.impl.LogicImpl;
 import shticell.engine.menu.Menu;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateFactory;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class UIManager implements Menu {
@@ -58,9 +62,8 @@ public class UIManager implements Menu {
         int userChoice = -1;
 
         while (true) {
-            System.out.println("Please enter a number between 1 and " + range + ":");
-
             try {
+                System.out.println("Please enter a number between 1 and " + range + ":");
                 String userInput = scanner.nextLine();
                 userChoice = Integer.parseInt(userInput);
 
@@ -69,13 +72,13 @@ public class UIManager implements Menu {
                 } else {
                     System.out.println("Input out of range. Please try again.");
                 }
-
             } catch (NumberFormatException e) {
                 System.out.println("Invalid input. Please enter a valid number.");
             }
-        }
 
+        }
         return userChoice;
+
     }
 
     @Override
@@ -122,29 +125,29 @@ public class UIManager implements Menu {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
             String input = scanner.nextLine().trim();
 
-            if (!isValidCoordinateFormat(input)) {
-                System.out.println("Invalid format. Please enter the coordinate in the format (e.g., A5).");
-                continue;
-            }
-
             try {
-                if (logic.isCoordinateWithinBounds(input)) {
+                // Validate the coordinate format
+                CoordinateFactory.isValidCoordinateFormat(input);
+
+                // Check if the coordinate is within bounds
+                if (CoordinateFactory.isCoordinateWithinBounds(
+                        logic.getSheet().getRowSize(),
+                        logic.getSheet().getColumnSize(),
+                        input)) {
                     coordinate = input;
                     break;
                 } else {
-                    System.out.println("Coordinate " + input + " is out of bounds.");
+                    System.out.println("Coordinate is out of bounds. Please enter a valid coordinate.");
                 }
-            } catch (Exception e) {
-                System.out.println("Invalid coordinate: " + e.getMessage());
+            } catch (IllegalArgumentException | ParseException e) {
+                System.out.println("Error: " + e.getMessage());
             }
         }
 
         return coordinate;
     }
 
-    private boolean isValidCoordinateFormat(String input) {
-        return input.matches("[A-Z]+\\d+");
-    }
+
 
     private String getNewValueForCell() {
         Scanner scanner = new Scanner(System.in);
@@ -155,19 +158,24 @@ public class UIManager implements Menu {
     @Override
     public void getXmlFile() {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the full path to the XML file: ");
-        String filePath = scanner.nextLine();
+        boolean validInput = false;
 
-        try {
-            logic.addSheet(XmlSheetLoader.fromXmlFileToObject(filePath));
-            System.out.println("Sheet loaded successfully.");
-        } catch (Exception e) {
-            System.out.println("Error loading file: " + e.getMessage());
+        while (!validInput) {
+            System.out.println("Please enter the full path to the XML file: ");
+            String filePath = scanner.nextLine();
+
+            try {
+                logic.addSheet(XmlSheetLoader.fromXmlFileToObject(filePath));
+                System.out.println("Sheet loaded successfully.");
+                validInput = true;
+            } catch (Exception e) {
+                System.out.print("Error loading file: " + e.getMessage() + " Please try again.");
+                System.out.println();
+            }
         }
     }
 
-    // Placeholder for displayVersions method
     private void displayVersions() {
-        // Implement version display logic if needed
+
     }
 }

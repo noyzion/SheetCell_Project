@@ -153,19 +153,5 @@ public class LogicImpl {
         }
         return cellDTOs;
     }
-    public boolean isCoordinateWithinBounds(String coordinate) {
-        try {
-            // Parse the coordinate string to a Coordinate object
-            Coordinate cord = CoordinateParser.parse(coordinate);
 
-            // Check if the parsed row and column are within the bounds of the sheet
-            return cord.getRow() >= 0 &&
-                    cord.getRow() < mainSheet.getLast().getRowSize() &&
-                    cord.getColumn() >= 0 &&
-                    cord.getColumn()  < mainSheet.getLast().getColSize();
-
-        } catch (ParseException | IllegalArgumentException e) {
-            return false;
-        }
-    }
 }
