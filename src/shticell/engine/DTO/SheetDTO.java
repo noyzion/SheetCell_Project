@@ -3,6 +3,8 @@ package shticell.engine.DTO;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.sheet.impl.Edge;
 
 import java.util.List;
@@ -64,6 +66,10 @@ public class SheetDTO {
         return edges;
     }
 
+    public CellDTO getCell(String coordinate) throws ParseException {
+        Coordinate cord = CoordinateParser.parse(coordinate);
+        return cells.get(new CoordinateDTO(cord.getRow(), cord.getColumn(), cord.getStringCord()));
+    }
     @Override
     public String toString() {
         StringBuilder outputString = new StringBuilder();
@@ -79,11 +85,11 @@ public class SheetDTO {
         outputString.append("\n");
 
         for (int row = 0; row < rowSize; row++) {
-            String rowHeader = String.format("%02d | ", row + 1);
+            String rowHeader = String.format("%02d | ", row +1);
             outputString.append(rowHeader);
 
             for (int col = 0; col < columnSize; col++) {
-                CoordinateDTO cellCoordinate = new CoordinateDTO(row, col + 1);
+                CoordinateDTO cellCoordinate = new CoordinateDTO(row, col );
                 String cellValue = cells.containsKey(cellCoordinate) ?
                         String.valueOf(cells.get(cellCoordinate).getEffectiveValue().getValue()) : " ";
 

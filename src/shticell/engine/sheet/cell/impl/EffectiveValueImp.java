@@ -131,7 +131,9 @@ public class EffectiveValueImp implements EffectiveValue {
             sheet.getCell(coordinate).addCellToRelatedCells(ref);
             sheet.getCell(ref).addCellToAffectedCells(coordinate);
             Edge edge = new Edge(ref, coordinate);
-            sheet.addEdge(edge);
+            if (!sheet.getEdges().contains(edge)) {
+                sheet.addEdge(edge);
+            }
         }
 
         return res;

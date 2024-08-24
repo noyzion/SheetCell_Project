@@ -3,8 +3,8 @@ package shticell.engine.sheet.impl;
 import shticell.engine.sheet.coordinate.Coordinate;
 
 public class Edge {
-    private final shticell.engine.sheet.coordinate.Coordinate from; // התא שממנו יוצאת הקשת
-    private final Coordinate to;   // התא שאליו נכנסת הקשת
+    private final shticell.engine.sheet.coordinate.Coordinate from;
+    private final Coordinate to;
 
     public Edge(Coordinate from, Coordinate to) {
         this.from = from;

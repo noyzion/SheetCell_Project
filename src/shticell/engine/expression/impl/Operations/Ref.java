@@ -35,7 +35,7 @@ public class Ref extends UnaryExpression {
 
         Cell cell = sheet.getCell(refCoordinate);
         if (cell == null) {
-            throw new IllegalArgumentException("Cell not found at coordinate: " + refCoordinate);
+            throw new IllegalArgumentException("Cell at coordinate: " + coordinateStr + " is empty, you cant use it");
         }
 
         return cell.getEffectiveValue().getValue();

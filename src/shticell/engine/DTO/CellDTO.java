@@ -2,6 +2,8 @@ package shticell.engine.DTO;
 
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 
 import java.util.List;
 

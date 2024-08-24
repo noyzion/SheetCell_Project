@@ -2,10 +2,12 @@ package shticell.ui;
 
 import shticell.engine.DTO.CellDTO;
 import shticell.engine.DTO.CoordinateDTO;
+import shticell.engine.DTO.SheetDTO;
 import shticell.engine.logic.impl.LogicImpl;
 import shticell.engine.menu.Menu;
-import shticell.engine.sheet.cell.api.Cell;
-import shticell.engine.sheet.coordinate.*;
+import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
 import java.util.Scanner;
@@ -24,9 +26,10 @@ public class UIManager implements Menu {
     }
 
     @Override
-    public void displaySpreadsheet() {
-        if (logic.getSheet() != null) {
-            System.out.println(logic.getSheet().toString());
+    public void displaySpreadsheet()  {
+        SheetDTO sheetDTO = logic.getSheet();
+        if (sheetDTO != null) {
+            System.out.println(sheetDTO.toString());
         } else {
             System.out.println("No sheet loaded.");
         }
@@ -34,13 +37,18 @@ public class UIManager implements Menu {
 
     @Override
     public void displaySingleCell() {
-        CoordinateDTO coordinate = getCellCoordinate();
+        String coordinate = getCellCoordinate();
         if (coordinate != null) {
-            CellDTO cell = logic.getSheet().getCells().get(coordinate);
-            if (cell != null) {
-                System.out.println(cell.toString());
-            } else {
-                System.out.println("Cell not found.");
+            try {
+                CellDTO cellDTO = logic.getSheet().getCell(coordinate);
+                if (cellDTO != null) {
+                    System.out.println(cellDTO.toString());
+                } else {
+                    System.out.println("Cell " + coordinate +" is empty");
+                }
+            }
+            catch (ParseException e) {
+                System.out.println(e.getMessage());
             }
         }
     }
@@ -71,27 +79,14 @@ public class UIManager implements Menu {
     }
 
     @Override
-    public void updateSingleCell(CoordinateDTO coordinateDTO, String newOriginalValue) {
-        if (logic.getSheet() != null && coordinateDTO != null) {
-            try {
-                Coordinate coordinate = toCoordinate(coordinateDTO);
-                logic.setCellValue(coordinate, newOriginalValue);
-                System.out.println("Cell updated successfully.");
-            } catch (Exception e) {
-                System.out.println("Error updating cell: " + e.getMessage());
-            }
-        } else {
-            System.out.println("Sheet or coordinate is not valid.");
+    public void updateSingleCell(String cellID, String newOriginalValue) {
+        try {
+            Coordinate cord = CoordinateParser.parse(cellID);
+            logic.setCellValue(cord, newOriginalValue);
+            System.out.println("Cell updated successfully.");
+        } catch (Exception e) {
+            System.out.println("Error updating cell: " + e.getMessage());
         }
-    }
-
-    // Utility method to convert CoordinateDTO to Coordinate
-    private Coordinate toCoordinate(CoordinateDTO coordinateDTO) {
-        if (coordinateDTO == null) {
-            throw new IllegalArgumentException("CoordinateDTO cannot be null.");
-        }
-        // Assuming CoordinateImpl has a constructor that matches the parameters
-        return new CoordinateImpl(coordinateDTO.getRow(), coordinateDTO.getColumn());
     }
 
     public void start() {
@@ -119,9 +114,9 @@ public class UIManager implements Menu {
         System.out.println("Exiting program. Goodbye!");
     }
 
-    private CoordinateDTO getCellCoordinate() {
+    private String getCellCoordinate() {
         Scanner scanner = new Scanner(System.in);
-        CoordinateDTO coordinate = null;
+        String coordinate = null;
 
         while (true) {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
@@ -133,15 +128,13 @@ public class UIManager implements Menu {
             }
 
             try {
-                coordinate = (CoordinateDTO) CoordinateParser.parse(input);
-                if (coordinate.getRow() < 0 || coordinate.getRow() >= logic.getSheet().getRowSize() ||
-                        coordinate.getColumn() < 0 || coordinate.getColumn() >= logic.getSheet().getColumnSize()) {
-                    System.out.println("Coordinate " + input + " is out of bounds.");
-                } else {
+                if (logic.isCoordinateWithinBounds(input)) {
+                    coordinate = input;
                     break;
+                } else {
+                    System.out.println("Coordinate " + input + " is out of bounds.");
                 }
-
-            } catch (IllegalArgumentException | IndexOutOfBoundsException | ParseException e) {
+            } catch (Exception e) {
                 System.out.println("Invalid coordinate: " + e.getMessage());
             }
         }

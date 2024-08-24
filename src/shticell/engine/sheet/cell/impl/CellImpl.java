@@ -12,8 +12,8 @@ public class CellImpl implements Cell {
     private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;
-    private  List<Coordinate> relatedCells = new ArrayList<>();
-    private  List<Coordinate> affectedCells = new ArrayList<>();
+    private List<Coordinate> relatedCells = new ArrayList<>();
+    private List<Coordinate> affectedCells = new ArrayList<>();
     private int lastVersionUpdate;
     private final int rowsHeightUnits;
     private final int columnWidthUnits;
@@ -24,16 +24,22 @@ public class CellImpl implements Cell {
         this.rowsHeightUnits = rowsHeightUnits;
         this.columnWidthUnits = columnWidthUnits;
     }
-    public CellImpl(CellImpl other) {
-        this.coordinate = new CoordinateImpl(other.getCoordinate().getRow(), other.getCoordinate().getRow(), other.getCoordinate().getStringCord()); // Deep copy of Coordinate
-        this.originalValue = other.originalValue;
-        this.effectiveValue = other.effectiveValue != null ? other.effectiveValue.copy() : null; // Assuming EffectiveValue has a copy method
-        this.lastVersionUpdate = other.lastVersionUpdate;
-        this.relatedCells = new ArrayList<>(other.relatedCells); // Deep copy of related cells
-        this.affectedCells = new ArrayList<>(other.affectedCells); // Deep copy of affected cells
-        this.rowsHeightUnits = other.rowsHeightUnits;
-        this.columnWidthUnits = other.columnWidthUnits;
+
+    public CellImpl(Cell other) {
+        this.coordinate = new CoordinateImpl(
+                other.getCoordinate().getRow(),
+                other.getCoordinate().getColumn(),
+                other.getCoordinate().getStringCord()
+        );
+        this.originalValue = other.getOriginalValue();
+        this.effectiveValue = other.getEffectiveValue() != null ? other.getEffectiveValue().copy() : null;
+        this.lastVersionUpdate = other.getVersion();
+        this.relatedCells = new ArrayList<>(other.getRelatedCells());
+        this.affectedCells = new ArrayList<>(other.getAffectedCells());
+        this.rowsHeightUnits = other.getRowsHeightUnits();
+        this.columnWidthUnits = other.getColumnWidthUnits();
     }
+
 
     @Override
     public Coordinate getCoordinate() {
@@ -46,8 +52,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public boolean isInBounds()
-    {
+    public boolean isInBounds() {
         int widthLength = this.effectiveValue.getValue().toString().length();
         return widthLength >= this.columnWidthUnits;
     }
@@ -63,7 +68,7 @@ public class CellImpl implements Cell {
     }
 
     @Override
-   public void setEffectiveValue(EffectiveValue value) {
+    public void setEffectiveValue(EffectiveValue value) {
         this.effectiveValue = value;
     }
 
@@ -103,4 +108,13 @@ public class CellImpl implements Cell {
     }
 
 
+    @Override
+    public int getRowsHeightUnits() {
+        return rowsHeightUnits;
+    }
+
+    @Override
+    public int getColumnWidthUnits() {
+        return columnWidthUnits;
+    }
 }

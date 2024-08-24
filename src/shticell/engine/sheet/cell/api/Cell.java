@@ -30,4 +30,8 @@ public interface Cell {
 
     void updateVersion();
 
+
+    int getRowsHeightUnits();
+
+    int getColumnWidthUnits();
 }

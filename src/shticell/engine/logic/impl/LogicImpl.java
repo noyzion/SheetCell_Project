@@ -6,7 +6,9 @@ import shticell.engine.DTO.CellDTO;
 import shticell.engine.DTO.CoordinateDTO;
 import shticell.engine.DTO.SheetDTO;
 import shticell.engine.sheet.api.Sheet;
+import shticell.engine.sheet.api.SheetReadActions;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
@@ -40,17 +42,11 @@ public class LogicImpl {
         );
     }
 
-    public static SheetDTO toSheetDTO(Sheet sheet) {
-        if (sheet == null) {
-            throw new IllegalArgumentException("Sheet cannot be null.");
-        }
-
+    public static SheetDTO toSheetDTO(SheetReadActions sheet) {
         Map<CoordinateDTO, CellDTO> cellDTOs = sheet.getCells().entrySet().stream()
                 .collect(Collectors.toMap(
-                        entry -> toCoordinateDTO(entry.getKey()), // Convert keys to CoordinateDTO
-                        entry -> toCellDTO(entry.getValue())      // Convert values to CellDTO
-                ));
-
+                        entry -> toCoordinateDTO(entry.getKey()),
+                        entry -> toCellDTO(entry.getValue())));
         return new SheetDTO(
                 sheet.getSheetName(),
                 sheet.getVersion(),
@@ -74,12 +70,10 @@ public class LogicImpl {
             throw new IllegalStateException("No sheets available to update.");
         }
 
-        Sheet currentSheet = mainSheet.get(mainSheet.size() - 1);
+        Sheet currentSheet = mainSheet.getLast();
 
-        // Create a new sheet based on the current sheet
         Sheet newSheet = createNewSheetFrom(currentSheet);
 
-        // Update the new sheet with the new cell value
         newSheet.onCellUpdated(value, cellId);
 
         // Add the new sheet to the list
@@ -87,14 +81,30 @@ public class LogicImpl {
     }
 
     private Sheet createNewSheetFrom(Sheet oldSheet) {
-        return new SheetImpl(
+        SheetImpl newSheet = new SheetImpl(
                 oldSheet.getSheetName(),
                 oldSheet.getRowSize(),
                 oldSheet.getColSize(),
                 oldSheet.getColumnWidthUnits(),
                 oldSheet.getRowsHeightUnits()
         );
+
+        // Copy cells from oldSheet to newSheet
+        for (Map.Entry<Coordinate, Cell> entry : oldSheet.getCells().entrySet()) {
+            Coordinate coordinate = entry.getKey();
+            Cell oldCell = entry.getValue();
+
+            Cell newCell = new CellImpl(oldCell);
+            newSheet.addCell(newCell);
+        }
+
+        for (Edge edge : oldSheet.getEdges()) {
+            Edge newEdge = new Edge(edge.getFrom(), edge.getTo()); // Adjust if needed
+            newSheet.addEdge(newEdge);
+        }
+        return newSheet;
     }
+
 
     public void addSheet(Sheet newSheet) {
         if (newSheet == null) {
@@ -142,5 +152,20 @@ public class LogicImpl {
             cellDTOs.put(coordinateDTO, cellDTO);
         }
         return cellDTOs;
+    }
+    public boolean isCoordinateWithinBounds(String coordinate) {
+        try {
+            // Parse the coordinate string to a Coordinate object
+            Coordinate cord = CoordinateParser.parse(coordinate);
+
+            // Check if the parsed row and column are within the bounds of the sheet
+            return cord.getRow() >= 0 &&
+                    cord.getRow() < mainSheet.getLast().getRowSize() &&
+                    cord.getColumn() >= 0 &&
+                    cord.getColumn()  < mainSheet.getLast().getColSize();
+
+        } catch (ParseException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }

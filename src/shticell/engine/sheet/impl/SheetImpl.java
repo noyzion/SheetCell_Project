@@ -9,6 +9,8 @@ import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
+import shticell.engine.sheet.coordinate.CoordinateParser;
+import shticell.engine.sheet.coordinate.ParseException;
 
 import java.util.*;
 
