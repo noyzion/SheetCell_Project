@@ -47,4 +47,15 @@ public class CellDTO {
     public List<Coordinate> getAffectedCells() {
         return affectedCells;
     }
+
+    @Override
+    public String toString() {
+        return "\n Coordinate: " + coordinate.getStringCord() +
+                "\n Original Value: " + originalValue +
+                "\n Effective Value: " + effectiveValue.getValue() +
+                "\n Last Version Update: " + lastVersionUpdate +
+                "\n Related Cells: " + relatedCells +
+                "\n Affected Cells: " + affectedCells +
+                "\n}";
+    }
 }

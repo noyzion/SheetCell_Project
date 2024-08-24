@@ -13,7 +13,7 @@ public class CoordinateFactory {
         return coordinate.getRow() + ":" + coordinate.getColumn();
     }
 
-    public static Coordinate createCoordinate(Sheet sheet, int row, int column) throws IndexOutOfBoundsException {
+    public static Coordinate createCoordinate(Sheet sheet, int row, int column, String cord) throws IndexOutOfBoundsException {
         if (row < 0 || row >= sheet.getRowSize() || column < 0 || column >= sheet.getColSize()) {
             throw new IndexOutOfBoundsException("Please enter a valid row/column number, between 1 and " +
                     (sheet.getRowSize()) + " for rows and " +
@@ -26,33 +26,18 @@ public class CoordinateFactory {
             return cachedCoordinates.get(key);
         }
 
-        CoordinateImpl coordinate = new CoordinateImpl(row, column);
+        CoordinateImpl coordinate = new CoordinateImpl(row, column, cord);
         cachedCoordinates.put(key, coordinate);
 
         return coordinate;
     }
 
-    public static boolean isValidCoordinateFormat(String input) throws IllegalArgumentException {
+    public static void isValidCoordinateFormat(String input) throws IllegalArgumentException {
         if (!input.matches("[A-Z]+\\d+")) {
             throw new IllegalArgumentException("Invalid format. Coordinate should be in the format (e.g., A5).");
         }
-        return true;
     }
 
-    public static int convertColumnLetterToIndex(String columnLetter) throws IllegalArgumentException {
-        if (columnLetter == null || columnLetter.isEmpty()) {
-            throw new IllegalArgumentException("Column letter cannot be null or empty.");
-        }
-
-        int columnIndex = 0;
-        for (char letter : columnLetter.toCharArray()) {
-            if (letter < 'A' || letter > 'Z') {
-                throw new IllegalArgumentException("Column letter should only contain uppercase letters.");
-            }
-            columnIndex = columnIndex * 26 + (letter - 'A');
-        }
-        return columnIndex;
-    }
 
     public static String convertIndexToColumnLetter(int columnIndex) throws IllegalArgumentException {
         if (columnIndex < 0) {
@@ -69,13 +54,17 @@ public class CoordinateFactory {
 
     public static boolean isCoordinateWithinBounds(int rowSize, int colSize, String coordinate) throws ParseException, IllegalArgumentException {
         Coordinate cord = CoordinateParser.parse(coordinate);
-
+        StringBuilder errorMessages = new StringBuilder();
         if (cord.getRow() < 0 || cord.getRow() >= rowSize) {
-            throw new IllegalArgumentException("Row index out of bounds. Valid row indices are from 1 to " + (rowSize) + ".");
+            errorMessages.append("Row index out of bounds. Valid row indices are from 1 to ").append(rowSize).append(". ");
         }
         if (cord.getColumn() < 0 || cord.getColumn() >= colSize) {
-            throw new IllegalArgumentException("Column index out of bounds. Valid column indices are from 1 to " + (colSize) + ".");
+            errorMessages.append("Column index out of bounds. Valid column indices are from 1 to ").append(convertIndexToColumnLetter(colSize)).append(". ");
         }
+        if (!errorMessages.isEmpty()) {
+            throw new IllegalArgumentException(errorMessages.toString().trim());
+        }
+
         return true;
     }
 

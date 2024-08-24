@@ -18,7 +18,7 @@ public class SheetImpl implements Sheet {
     private final Map<Coordinate, Cell> cells;
     private List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
     private final String sheetName;
-    private int version;
+    private int version = 1;
     private final int rowSize;
     private final int columnSize;
     private final int columnWidthUnits;
@@ -91,7 +91,7 @@ public class SheetImpl implements Sheet {
     @Override
     public void addCell(Cell newCell) {
         Coordinate cellCord = newCell.getCoordinate();
-        Coordinate coordinate = CoordinateFactory.createCoordinate(this, cellCord.getRow(), cellCord.getColumn());
+        Coordinate coordinate = CoordinateFactory.createCoordinate(this, cellCord.getRow(), cellCord.getColumn(),cellCord.getStringCord());
         cells.put(coordinate, newCell);
     }
 

@@ -14,7 +14,7 @@ public class CellImpl implements Cell {
     private final Coordinate coordinate;
     private List<Coordinate> relatedCells = new ArrayList<>();
     private List<Coordinate> affectedCells = new ArrayList<>();
-    private int lastVersionUpdate;
+    private int lastVersionUpdate = 1;
     private final int rowsHeightUnits;
     private final int columnWidthUnits;
 

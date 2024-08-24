@@ -17,14 +17,14 @@ import shticell.engine.sheet.impl.SheetImpl;
 
 public class LogicImpl {
 
-    private List<Sheet> mainSheet = new ArrayList<>();
+    private final List<Sheet> mainSheet = new ArrayList<>();
 
 
     public static CoordinateDTO toCoordinateDTO(Coordinate coordinate) {
         if (coordinate == null) {
             throw new IllegalArgumentException("Coordinate cannot be null.");
         }
-        return new CoordinateDTO(coordinate.getRow(), coordinate.getColumn());
+        return new CoordinateDTO(coordinate.getRow(), coordinate.getColumn(), coordinate.getStringCord());
     }
 
 
@@ -33,7 +33,7 @@ public class LogicImpl {
             throw new IllegalArgumentException("Cell cannot be null.");
         }
         return new CellDTO(
-                toCoordinateDTO(cell.getCoordinate()), // Convert to CoordinateDTO
+                toCoordinateDTO(cell.getCoordinate()),
                 cell.getOriginalValue(),
                 cell.getEffectiveValue() != null ? cell.getEffectiveValue(): null, // Handle null effective value
                 cell.getVersion(),
@@ -57,12 +57,6 @@ public class LogicImpl {
                 cellDTOs,
                 sheet.getEdges()
         );
-    }
-
-    public CellDTO showCell(String cellId) throws ParseException {
-        Coordinate coordinate = CoordinateParser.parse(cellId);
-        Cell cell = mainSheet.getLast().getCell(coordinate);
-        return toCellDTO(cell);
     }
 
     public void setCellValue(Coordinate cellId, String value) {
@@ -146,7 +140,7 @@ public class LogicImpl {
         for (Map.Entry<Coordinate, Cell> entry : sheet.getCells().entrySet()) {
             Coordinate coordinate = entry.getKey();
             Cell cell = entry.getValue();
-            CoordinateDTO coordinateDTO = new CoordinateDTO(coordinate.getRow(), coordinate.getColumn());
+            CoordinateDTO coordinateDTO = new CoordinateDTO(coordinate.getRow(), coordinate.getColumn(),coordinate.getStringCord());
             CellDTO cellDTO = new CellDTO(coordinateDTO, cell.getOriginalValue(), cell.getEffectiveValue(), cell.getVersion(),
                     cell.getRelatedCells(),cell.getAffectedCells());
             cellDTOs.put(coordinateDTO, cellDTO);
