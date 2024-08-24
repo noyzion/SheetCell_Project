@@ -51,11 +51,6 @@ public class CellImpl implements Cell {
         this.originalValue = originalValue;
     }
 
-    @Override
-    public boolean isInBounds() {
-        int widthLength = this.effectiveValue.getValue().toString().length();
-        return widthLength >= this.columnWidthUnits;
-    }
 
     @Override
     public String getOriginalValue() {

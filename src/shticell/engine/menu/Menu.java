@@ -8,11 +8,11 @@ public interface Menu {
 
   public void getXmlFile();
 
-  public void displaySpreadsheet() throws ParseException;
+  public void displaySpreadsheet();
 
-  public void displaySingleCell() throws ParseException;
+  public void displaySingleCell();
 
-  public void updateSingleCell(String cord, String newOriginalValue);
+  public void updateSingleCell(String cord);
 
   //public void showSheetVersions();
   //public void exit();

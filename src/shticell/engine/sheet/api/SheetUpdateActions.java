@@ -11,7 +11,9 @@ public interface SheetUpdateActions {
 
     void addEdge(Edge edge);
 
-    void updateCells();
+    void updateCells(Coordinate coordinate, boolean count);
+
+    void removeCell(Coordinate coordinate);
 
     void updateVersion();
 }

@@ -8,8 +8,6 @@ public interface Cell {
 
     Coordinate getCoordinate();
 
-    boolean isInBounds();
-
     String getOriginalValue();
 
     void setOriginalValue(String value);
@@ -28,10 +26,10 @@ public interface Cell {
 
     void addCellToRelatedCells(Coordinate coordinate);
 
-    void updateVersion();
-
-
     int getRowsHeightUnits();
 
     int getColumnWidthUnits();
-}
+
+    void updateVersion();
+
+    }

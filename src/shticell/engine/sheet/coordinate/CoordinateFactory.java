@@ -55,11 +55,15 @@ public class CoordinateFactory {
     public static boolean isCoordinateWithinBounds(int rowSize, int colSize, String coordinate) throws ParseException, IllegalArgumentException {
         Coordinate cord = CoordinateParser.parse(coordinate);
         StringBuilder errorMessages = new StringBuilder();
+        boolean both = false;
         if (cord.getRow() < 0 || cord.getRow() >= rowSize) {
-            errorMessages.append("Row index out of bounds. Valid row indices are from 1 to ").append(rowSize).append(". ");
+            errorMessages.append("row index out of bounds. Valid row indices are from 1 to ").append(rowSize).append(". ");
+            both = true;
         }
         if (cord.getColumn() < 0 || cord.getColumn() >= colSize) {
-            errorMessages.append("Column index out of bounds. Valid column indices are from 1 to ").append(convertIndexToColumnLetter(colSize)).append(". ");
+            if (both)
+                errorMessages.append(" and ");
+            errorMessages.append("column index out of bounds. Valid column indices are from 1 to ").append(convertIndexToColumnLetter(colSize)).append(". ");
         }
         if (!errorMessages.isEmpty()) {
             throw new IllegalArgumentException(errorMessages.toString().trim());

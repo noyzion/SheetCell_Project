@@ -82,17 +82,39 @@ public class UIManager implements Menu {
     }
 
     @Override
-    public void updateSingleCell(String cellID, String newOriginalValue) {
+    public void updateSingleCell(String cellID) {
         try {
-            Coordinate cord = CoordinateParser.parse(cellID);
-            logic.setCellValue(cord, newOriginalValue);
-            System.out.println("Cell updated successfully.");
-        } catch (Exception e) {
-            System.out.println("Error updating cell: " + e.getMessage());
+            if (logic.getSheet().getCell(cellID) == null)
+                System.out.println("Cell at: " + cellID + " is empty");
+            else {
+                System.out.println("Cell at: " + cellID);
+                System.out.println("Original value is: " + logic.getSheet().getCell(cellID).getOriginalValue());
+                System.out.println("Effective value is: " + logic.getSheet().getCell(cellID).getEffectiveValue().getValue());
+            }
+            } catch(ParseException e) {
+            throw new RuntimeException(e);
         }
+
+        boolean validCalc = false;
+        while (!validCalc) {
+            try {
+                String newOriginalValue = getNewValueForCell(logic.getSheet().getCell(cellID));
+                if (newOriginalValue.isEmpty()) {
+
+                }
+                else {
+                    logic.setCellValue(cellID, newOriginalValue);
+                    System.out.println("Cell updated successfully.");
+                }
+                validCalc = true;
+            } catch (Exception e) {
+                System.out.println("Error updating cell: " + e.getMessage());
+            }
+        }
+        displaySpreadsheet();
     }
 
-    public void start() {
+    public void start()  {
         boolean exit = false;
 
         while (!exit) {
@@ -103,7 +125,7 @@ public class UIManager implements Menu {
                 case 1 -> getXmlFile();
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
-                case 4 -> updateSingleCell(getCellCoordinate(), getNewValueForCell());
+                case 4 -> updateSingleCell(getCellCoordinate());
                 case 5 -> displayVersions(); // Implement if needed
                 case 6 -> exit = true;
                 default -> System.out.println("Invalid choice. Please try again.");
@@ -126,10 +148,7 @@ public class UIManager implements Menu {
             String input = scanner.nextLine().trim();
 
             try {
-                // Validate the coordinate format
                 CoordinateFactory.isValidCoordinateFormat(input);
-
-                // Check if the coordinate is within bounds
                 if (CoordinateFactory.isCoordinateWithinBounds(
                         logic.getSheet().getRowSize(),
                         logic.getSheet().getColumnSize(),
@@ -149,8 +168,9 @@ public class UIManager implements Menu {
 
 
 
-    private String getNewValueForCell() {
+    private String getNewValueForCell(CellDTO cellDTO) {
         Scanner scanner = new Scanner(System.in);
+        System.out.println("You can enter value from type: " + cellDTO.getEffectiveValue().getCellType().toString());
         System.out.print("Enter the new value: ");
         return scanner.nextLine();
     }

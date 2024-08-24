@@ -59,18 +59,15 @@ public class LogicImpl {
         );
     }
 
-    public void setCellValue(Coordinate cellId, String value) {
+    public void setCellValue(String cellId, String value) throws ParseException {
+        Coordinate coordinate = CoordinateParser.parse(cellId);
         if (mainSheet.isEmpty()) {
             throw new IllegalStateException("No sheets available to update.");
         }
-
         Sheet currentSheet = mainSheet.getLast();
-
         Sheet newSheet = createNewSheetFrom(currentSheet);
-
-        newSheet.onCellUpdated(value, cellId);
-
-        // Add the new sheet to the list
+        newSheet.updateVersion();
+        newSheet.onCellUpdated(value, coordinate);
         mainSheet.add(newSheet);
     }
 
@@ -99,6 +96,10 @@ public class LogicImpl {
         return newSheet;
     }
 
+    public void removeCell(String cellID) throws ParseException {
+        Coordinate coordinate = CoordinateParser.parse(cellID);
+        mainSheet.getLast().removeCell(coordinate);
+    }
 
     public void addSheet(Sheet newSheet) {
         if (newSheet == null) {
