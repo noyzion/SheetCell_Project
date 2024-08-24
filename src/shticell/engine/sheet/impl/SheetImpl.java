@@ -124,6 +124,7 @@ public class SheetImpl implements Sheet {
         } catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
+
             updateCells(coordinate, false);
             counterChangedCells--;
             throw new IllegalArgumentException("Failed to update cell at " +
@@ -138,12 +139,15 @@ public class SheetImpl implements Sheet {
         List<Cell> sortedCells = orderCellsForCalculation();
         for (Cell cell : sortedCells) {
             try {
-                cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
+                if (cell.getEffectiveValue() != null) {
+                    cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
+                }
                 if (count)
                     counterChangedCells++;
                 else
                     counterChangedCells--;
-            } catch (IllegalArgumentException e) {
+            }
+            catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +
                         cell.getCoordinate().getStringCord() +
                         " due to change in cell at " +

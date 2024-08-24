@@ -112,15 +112,14 @@ public class EffectiveValueImp implements EffectiveValue {
         return operatorAndArgs;
     }
 
-    private Expression createExpression(Sheet sheet, String[] expression) {
+    private Expression createExpression(Sheet sheet, String[] expression) throws IllegalArgumentException {
         String operator = expression[0];
         List<Expression> args = new ArrayList<>();
 
         for (int i = 1; i < expression.length; i++) {
-            args.add(stringToExpression( sheet,expression[i]));
+            args.add(stringToExpression(sheet, expression[i]));
         }
-        Expression res = getExpression( sheet ,operator, args);
-
+        Expression res = getExpression(sheet, operator, args);
 
 
         this.expressionName = res.getOperationName();
