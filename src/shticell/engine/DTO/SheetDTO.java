@@ -85,15 +85,14 @@ public class SheetDTO {
         outputString.append("\n");
 
         for (int row = 0; row < rowSize; row++) {
-            String rowHeader = String.format("%02d | ", row +1);
+            String rowHeader = String.format("%02d | ", row + 1);
             outputString.append(rowHeader);
 
             for (int col = 0; col < columnSize; col++) {
-                CoordinateDTO cellCoordinate = new CoordinateDTO(row, col );
+                CoordinateDTO cellCoordinate = new CoordinateDTO(row, col);
                 String cellValue = cells.containsKey(cellCoordinate) ?
                         String.valueOf(cells.get(cellCoordinate).getEffectiveValue().getValue()) : " ";
 
-                // Truncate cellValue if it exceeds the column width
                 if (cellValue.length() > columnWidthUnits) {
                     cellValue = cellValue.substring(0, columnWidthUnits);
                 }
@@ -116,13 +115,21 @@ public class SheetDTO {
         return outputString.toString();
     }
 
+
     private static String centerText(String text, int width) {
-        if (text == null || width <= text.length()) {
-            return text;
+        if (text == null) {
+            text = "";
+        }
+        if (width <= text.length()) {
+            return text.substring(0, width);
         }
 
         int padding = (width - text.length()) / 2;
-        String format = "%" + padding + "s%s%" + (width - padding - text.length()) + "s";
-        return String.format(format, "", text, "");
+        String leftPadding = " ".repeat(padding);
+        String rightPadding = " ".repeat(width - text.length() - padding);
+
+        return leftPadding + text + rightPadding;
     }
+
+
 }
