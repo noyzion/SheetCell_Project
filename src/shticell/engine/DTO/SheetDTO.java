@@ -73,6 +73,8 @@ public class SheetDTO {
     @Override
     public String toString() {
         StringBuilder outputString = new StringBuilder();
+        outputString.append("Sheet name: ").append(sheetName).append("\n");
+        outputString.append("Version: ").append(version).append("\n");
         outputString.append("   | ");
 
         for (int col = 0; col < columnSize; col++) {

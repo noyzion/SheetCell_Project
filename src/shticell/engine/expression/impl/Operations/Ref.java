@@ -8,6 +8,8 @@ import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
 
+import java.util.Objects;
+
 
 public class Ref extends UnaryExpression {
 
@@ -34,6 +36,9 @@ public class Ref extends UnaryExpression {
         }
 
         Cell cell = sheet.getCell(refCoordinate);
+        if (Objects.equals(cell.getOriginalValue(), " ")) {
+            return Double.NaN;
+        }
         if (cell == null) {
             throw new IllegalArgumentException("Cell at coordinate: " + coordinateStr + " is empty, you cant use it");
         }

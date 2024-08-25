@@ -17,4 +17,5 @@ public abstract class UnaryExpression implements Expression {
 
     abstract protected Object evaluate(Object evaluate) throws NumberFormatException;
 
+
 }

@@ -1,6 +1,7 @@
 package shticell.engine.expression.impl;
 
 import shticell.engine.expression.api.Expression;
+import shticell.engine.expression.impl.Operations.Ref;
 
 
 public class NumberExpression implements Expression {
@@ -28,4 +29,5 @@ public class NumberExpression implements Expression {
     public String toString() {
         return String.valueOf(value);
     }
+
 }

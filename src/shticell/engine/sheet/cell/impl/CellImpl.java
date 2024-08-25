@@ -40,6 +40,10 @@ public class CellImpl implements Cell {
         this.columnWidthUnits = other.getColumnWidthUnits();
     }
 
+    @Override
+    public void setVersion(int version) {
+        this.lastVersionUpdate = version;
+    }
 
     @Override
     public Coordinate getCoordinate() {

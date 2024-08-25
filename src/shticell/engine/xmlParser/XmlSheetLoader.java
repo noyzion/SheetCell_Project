@@ -52,7 +52,7 @@ public class XmlSheetLoader {
         int rowSize = stlSheet.getSTLLayout().getRows();
         int columnSize = stlSheet.getSTLLayout().getColumns();
         STLCells stlCells = stlSheet.getSTLCells();
-        Sheet sheet = new SheetImpl(name,rowSize,columnSize,colWidthUnits,rowHeightUnits);
+        Sheet sheet = new SheetImpl(name,rowSize,columnSize,colWidthUnits,rowHeightUnits,1);
 
         for (STLCell stlCell : stlCells.getSTLCell()) {
             String stringCord = stlCell.getColumn() + stlCell.getRow();

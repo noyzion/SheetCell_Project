@@ -91,7 +91,7 @@ public class UIManager implements Menu {
                 System.out.println("Original value is: " + logic.getSheet().getCell(cellID).getOriginalValue());
                 System.out.println("Effective value is: " + logic.getSheet().getCell(cellID).getEffectiveValue().getValue());
             }
-            } catch(ParseException e) {
+        } catch (ParseException e) {
             throw new RuntimeException(e);
         }
 
@@ -101,8 +101,7 @@ public class UIManager implements Menu {
                 String newOriginalValue = getNewValueForCell(logic.getSheet().getCell(cellID));
                 if (newOriginalValue.isEmpty()) {
 
-                }
-                else {
+                } else {
                     logic.setCellValue(cellID, newOriginalValue);
                     System.out.println("Cell updated successfully.");
                 }
@@ -126,7 +125,7 @@ public class UIManager implements Menu {
                 case 2 -> displaySpreadsheet();
                 case 3 -> displaySingleCell();
                 case 4 -> updateSingleCell(getCellCoordinate());
-                case 5 -> displayVersions(); // Implement if needed
+                case 5 -> displayVersions();
                 case 6 -> exit = true;
                 default -> System.out.println("Invalid choice. Please try again.");
             }
@@ -170,7 +169,6 @@ public class UIManager implements Menu {
 
     private String getNewValueForCell(CellDTO cellDTO) {
         Scanner scanner = new Scanner(System.in);
-        System.out.println("You can enter value from type: " + cellDTO.getEffectiveValue().getCellType().toString());
         System.out.print("Enter the new value: ");
         return scanner.nextLine();
     }

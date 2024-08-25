@@ -77,12 +77,11 @@ public class LogicImpl {
                 oldSheet.getRowSize(),
                 oldSheet.getColSize(),
                 oldSheet.getColumnWidthUnits(),
-                oldSheet.getRowsHeightUnits()
+                oldSheet.getRowsHeightUnits(),
+                oldSheet.getVersion()
         );
 
-        // Copy cells from oldSheet to newSheet
         for (Map.Entry<Coordinate, Cell> entry : oldSheet.getCells().entrySet()) {
-            Coordinate coordinate = entry.getKey();
             Cell oldCell = entry.getValue();
 
             Cell newCell = new CellImpl(oldCell);

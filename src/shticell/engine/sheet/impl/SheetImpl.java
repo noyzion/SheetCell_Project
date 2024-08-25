@@ -19,7 +19,7 @@ public class SheetImpl implements Sheet {
     private final Map<Coordinate, Cell> cells;
     private List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
     private final String sheetName;
-    private int version = 1;
+    private int version;
     private final int rowSize;
     private final int columnSize;
     private final int columnWidthUnits;
@@ -27,7 +27,7 @@ public class SheetImpl implements Sheet {
     private int counterChangedCells;
 
 
-    public SheetImpl(String sheetName, int rowSize, int columnSize, int columnWidthUnits, int rowsHeightUnits) {
+    public SheetImpl(String sheetName, int rowSize, int columnSize, int columnWidthUnits, int rowsHeightUnits, int version) {
         this.sheetName = sheetName;
         this.cells = new HashMap<>();
         this.rowSize = rowSize;
@@ -35,20 +35,7 @@ public class SheetImpl implements Sheet {
         this.columnWidthUnits = columnWidthUnits;
         this.rowsHeightUnits = rowsHeightUnits;
         this.counterChangedCells = 0;
-    }
-
-    public SheetImpl(SheetImpl other) {
-        this.sheetName = other.sheetName;
-        this.columnWidthUnits = other.columnWidthUnits;
-        this.rowsHeightUnits = other.rowsHeightUnits;
-        this.rowSize = other.rowSize;
-        this.columnSize = other.columnSize;
-        this.counterChangedCells = 0;
-        this.cells = new HashMap<>();
-        for (Map.Entry<Coordinate, Cell> entry : other.cells.entrySet()) {
-            this.cells.put(entry.getKey(), new CellImpl((CellImpl) entry.getValue()));
-            this.edges = new ArrayList<>(other.edges); // Assuming Edge has a proper copy mechanism
-        }
+        this.version = version++;
 
     }
 
@@ -105,14 +92,21 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public void onCellUpdated(String originalValue, Coordinate coordinate)
-    {
+    public void onCellUpdated(String originalValue, Coordinate coordinate) {
+        String previousOriginalValue = null;
+        EffectiveValue previousEffectiveValue = null;
         Cell cell = cells.get(coordinate);
-        String previousOriginalValue = cell.getOriginalValue();
-        EffectiveValue previousEffectiveValue = cell.getEffectiveValue();
+        if (cell != null) {
+            previousOriginalValue = cell.getOriginalValue();
+            previousEffectiveValue = cell.getEffectiveValue();
+        } else {
+            cell = new CellImpl(coordinate, rowsHeightUnits, columnWidthUnits);
+            addCell(cell);
+        }
 
         try {
             cell.setOriginalValue(originalValue);
+            cell.updateVersion();
             counterChangedCells++;
             if (cell.getEffectiveValue() == null) {
                 cell.setEffectiveValue(new EffectiveValueImp(coordinate));
@@ -124,7 +118,7 @@ public class SheetImpl implements Sheet {
         } catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
-
+            cell.setVersion(cell.getVersion() - 1);
             updateCells(coordinate, false);
             counterChangedCells--;
             throw new IllegalArgumentException("Failed to update cell at " +
@@ -146,8 +140,7 @@ public class SheetImpl implements Sheet {
                     counterChangedCells++;
                 else
                     counterChangedCells--;
-            }
-            catch (IllegalArgumentException e) {
+            } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +
                         cell.getCoordinate().getStringCord() +
                         " due to change in cell at " +

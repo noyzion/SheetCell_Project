@@ -32,4 +32,6 @@ public interface Cell {
 
     void updateVersion();
 
-    }
+    void setVersion(int version);
+
+}
