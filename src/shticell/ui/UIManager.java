@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.Scanner;
 
 public class UIManager implements Menu {
@@ -99,7 +100,8 @@ public class UIManager implements Menu {
         while (!validCalc) {
             try {
                 String newOriginalValue = getNewValueForCell(logic.getSheet().getCell(cellID));
-                if (newOriginalValue.isEmpty()) {
+                if (Objects.equals(newOriginalValue, " ")) {
+                    logic.setCellValue(cellID, null);
 
                 } else {
                     logic.setCellValue(cellID, newOriginalValue);

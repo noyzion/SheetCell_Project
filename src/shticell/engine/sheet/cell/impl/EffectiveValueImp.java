@@ -42,9 +42,8 @@ public class EffectiveValueImp implements EffectiveValue {
 
     @Override
     public void calculateValue(Sheet sheet, String originalValue) {
-        if (originalValue.isEmpty()) {
-            this.value = " ";
-            this.cellType = CellType.STRING;
+        if (originalValue == null) {
+         this.value = null;
         } else if (originalValue.startsWith("{")) {
             Expression expr = stringToExpression(sheet, originalValue);
             if (this.value == null)

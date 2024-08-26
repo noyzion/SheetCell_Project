@@ -80,27 +80,36 @@ public class SheetDTO {
     @Override
     public String toString() {
         StringBuilder outputString = new StringBuilder();
+
+        // Append sheet name and version
         outputString.append("Sheet name: ").append(sheetName).append("\n");
         outputString.append("Version: ").append(version).append("\n");
-        outputString.append("   | ");
 
+        // Append column headers
+        outputString.append("   | ");
         for (int col = 0; col < columnSize; col++) {
             String colHeader = String.format("%-" + columnWidthUnits + "s", (char) ('A' + col));
             outputString.append(colHeader).append("| ");
         }
         outputString.append("\n");
+
+        // Append separator line
         outputString.append(" ".repeat(3));
-        outputString.append("-".repeat(columnWidthUnits * (columnSize + 1) - 4));
+        outputString.append("-".repeat(columnWidthUnits * columnSize + columnSize + 1)); // Adjust length for extra separator
         outputString.append("\n");
 
+        // Append rows
         for (int row = 0; row < rowSize; row++) {
             String rowHeader = String.format("%02d | ", row + 1);
             outputString.append(rowHeader);
 
             for (int col = 0; col < columnSize; col++) {
                 CoordinateDTO cellCoordinate = new CoordinateDTO(row, col);
-                String cellValue = cells.containsKey(cellCoordinate) ?
-                        String.valueOf(cells.get(cellCoordinate).getEffectiveValue().getValue()) : " ";
+                String cellValue = cells.containsKey(cellCoordinate)
+                        ? (cells.get(cellCoordinate).getEffectiveValue().getValue() != null
+                        ? String.valueOf(cells.get(cellCoordinate).getEffectiveValue().getValue())
+                        : " ")
+                        : " ";
 
                 if (cellValue.length() > columnWidthUnits) {
                     cellValue = cellValue.substring(0, columnWidthUnits);
@@ -109,6 +118,7 @@ public class SheetDTO {
                 outputString.append(formattedCellValue).append("| ");
             }
 
+            // Handle row height units
             for (int i = 1; i < rowsHeightUnits; i++) {
                 outputString.append("\n");
                 outputString.append("   | ");

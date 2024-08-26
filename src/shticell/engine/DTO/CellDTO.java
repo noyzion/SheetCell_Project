@@ -50,12 +50,16 @@ public class CellDTO {
 
     @Override
     public String toString() {
+        String originalValueString = (originalValue == null) ? "cell is empty" : originalValue;
+        String effectiveValueString = (effectiveValue.getValue() == null) ? "cell is empty" : effectiveValue.getValue().toString();
+
         return "\n Coordinate: " + coordinate.getStringCord() +
-                "\n Original Value: " + originalValue +
-                "\n Effective Value: " + effectiveValue.getValue() +
+                "\n Original Value: " + originalValueString +
+                "\n Effective Value: " + effectiveValueString +
                 "\n Last Version Update: " + lastVersionUpdate +
                 "\n Related Cells: " + relatedCells +
                 "\n Affected Cells: " + affectedCells +
                 "\n}";
     }
+
 }
