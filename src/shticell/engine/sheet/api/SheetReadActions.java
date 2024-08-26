@@ -27,5 +27,7 @@ public interface SheetReadActions {
 
     List<Edge> getEdges();
 
+    int getCounterChangedCells();
+
 
 }

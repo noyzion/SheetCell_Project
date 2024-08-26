@@ -30,8 +30,6 @@ public interface Cell {
 
     int getColumnWidthUnits();
 
-    void updateVersion();
-
     void setVersion(int version);
 
 }

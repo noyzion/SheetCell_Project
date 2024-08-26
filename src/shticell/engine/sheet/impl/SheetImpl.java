@@ -1,17 +1,12 @@
 package shticell.engine.sheet.impl;
 
-import com.sun.tools.xjc.reader.gbind.Graph;
 import shticell.engine.sheet.api.Sheet;
-import shticell.engine.sheet.api.SheetReadActions;
-import shticell.engine.sheet.api.SheetUpdateActions;
 import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
-import shticell.engine.sheet.coordinate.CoordinateParser;
-import shticell.engine.sheet.coordinate.ParseException;
 
 import java.util.*;
 
@@ -24,7 +19,7 @@ public class SheetImpl implements Sheet {
     private final int columnSize;
     private final int columnWidthUnits;
     private final int rowsHeightUnits;
-    private int counterChangedCells;
+    private int counterChangedCells = 0;
 
 
     public SheetImpl(String sheetName, int rowSize, int columnSize, int columnWidthUnits, int rowsHeightUnits, int version) {
@@ -37,6 +32,13 @@ public class SheetImpl implements Sheet {
         this.counterChangedCells = 0;
         this.version = version++;
 
+    }
+
+
+    @Override
+    public int getCounterChangedCells()
+    {
+        return counterChangedCells;
     }
 
     @Override
@@ -88,11 +90,11 @@ public class SheetImpl implements Sheet {
 
     @Override
     public void removeCell(Coordinate coordinate) {
-        cells.remove(coordinate);
     }
 
     @Override
     public void onCellUpdated(String originalValue, Coordinate coordinate) {
+        counterChangedCells = 0;
         String previousOriginalValue = null;
         EffectiveValue previousEffectiveValue = null;
         Cell cell = cells.get(coordinate);
@@ -106,21 +108,17 @@ public class SheetImpl implements Sheet {
 
         try {
             cell.setOriginalValue(originalValue);
-            cell.updateVersion();
-            counterChangedCells++;
             if (cell.getEffectiveValue() == null) {
                 cell.setEffectiveValue(new EffectiveValueImp(coordinate));
             }
             cell.getEffectiveValue().calculateValue(this, originalValue);
-            updateCells(coordinate, true);
+            updateCells(coordinate);
             cell.setOriginalValue(originalValue);
-
+            counterChangedCells = 1 + cell.getAffectedCells().size();
         } catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
-            cell.setVersion(cell.getVersion() - 1);
-            updateCells(coordinate, false);
-            counterChangedCells--;
+            updateCells(coordinate);
             throw new IllegalArgumentException("Failed to update cell at " +
                     coordinate.getStringCord() + " because of " +
                     e.getMessage());
@@ -129,17 +127,13 @@ public class SheetImpl implements Sheet {
     }
 
     @Override
-    public void updateCells(Coordinate coordinate, boolean count) {
+    public void updateCells(Coordinate coordinate) {
         List<Cell> sortedCells = orderCellsForCalculation();
         for (Cell cell : sortedCells) {
             try {
                 if (cell.getEffectiveValue() != null) {
                     cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
                 }
-                if (count)
-                    counterChangedCells++;
-                else
-                    counterChangedCells--;
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +
                         cell.getCoordinate().getStringCord() +

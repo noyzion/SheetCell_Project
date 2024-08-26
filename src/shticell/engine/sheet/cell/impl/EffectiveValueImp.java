@@ -62,15 +62,10 @@ public class EffectiveValueImp implements EffectiveValue {
             this.value = " ";
             this.cellType = CellType.STRING;
         } else if (originalValue.startsWith("{")) {
-            try {
-                Expression expr = stringToExpression(sheet, originalValue);
-                this.cellType = CellType.EXPRESSION;
-                this.expressionName = expr.getOperationName();
+            Expression expr = stringToExpression(sheet, originalValue);
+            this.expressionName = expr.getOperationName();
+            if (this.value == null)
                 this.value = expr.evaluate();
-            } catch (Exception e) {
-                this.value = "!UNDEFINED!";
-                this.cellType = CellType.STRING;
-            }
         } else {
             numOrString(originalValue);
         }

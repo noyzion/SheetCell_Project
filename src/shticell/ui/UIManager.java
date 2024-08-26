@@ -14,6 +14,7 @@ import shticell.engine.xmlParser.XmlSheetLoader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 public class UIManager implements Menu {
@@ -30,7 +31,7 @@ public class UIManager implements Menu {
     }
 
     @Override
-    public void displaySpreadsheet()  {
+    public void displaySpreadsheet() {
         SheetDTO sheetDTO = logic.getSheet();
         if (sheetDTO != null) {
             System.out.println(sheetDTO.toString());
@@ -48,10 +49,9 @@ public class UIManager implements Menu {
                 if (cellDTO != null) {
                     System.out.println(cellDTO.toString());
                 } else {
-                    System.out.println("Cell " + coordinate +" is empty");
+                    System.out.println("Cell " + coordinate + " is empty");
                 }
-            }
-            catch (ParseException e) {
+            } catch (ParseException e) {
                 System.out.println(e.getMessage());
             }
         }
@@ -104,6 +104,7 @@ public class UIManager implements Menu {
                 } else {
                     logic.setCellValue(cellID, newOriginalValue);
                     System.out.println("Cell updated successfully.");
+                    int counter = 1 + logic.getSheet().getCell(cellID).getAffectedCells().size();
                 }
                 validCalc = true;
             } catch (Exception e) {
@@ -113,7 +114,7 @@ public class UIManager implements Menu {
         displaySpreadsheet();
     }
 
-    public void start()  {
+    public void start() {
         boolean exit = false;
 
         while (!exit) {
@@ -166,7 +167,6 @@ public class UIManager implements Menu {
     }
 
 
-
     private String getNewValueForCell(CellDTO cellDTO) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the new value: ");
@@ -193,7 +193,36 @@ public class UIManager implements Menu {
         }
     }
 
-    private void displayVersions() {
+    private void displayVersionsTable(int versions) {
+        System.out.println("Version Number | Number of Changes");
+        System.out.println("-------------------------------");
+        for (int i = 0; i < versions; i++) {
+            int versionNumber = i + 1;
+            int changes = logic.getSheet().getCounterChangedCells();
+            System.out.printf("%-15d | %-17d%n", versionNumber, changes);
+        }
+    }
 
+    private void displayVersions() {
+        displayVersionsTable(logic.getSheet().getCounterChangedCells());
+        int version = getVersionNumber(logic.getSheet().getCounterChangedCells());
+        System.out.println("Displaying the state of the spreadsheet for version " + version + ":");
+    }
+
+    public int getVersionNumber(int numVersions) {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.print("Please enter the version number to view: ");
+            try {
+                int versionNumber = Integer.parseInt(scanner.nextLine());
+                if (versionNumber >= 1 && versionNumber <= numVersions) {
+                    return versionNumber;
+                } else {
+                    System.out.printf("Invalid version number. Please enter a number between 1 and %d.%n", numVersions);
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Please enter a valid integer.");
+            }
+        }
     }
 }

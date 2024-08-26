@@ -97,11 +97,6 @@ public class CellImpl implements Cell {
     }
 
     @Override
-    public void updateVersion() {
-        this.lastVersionUpdate++;
-    }
-
-    @Override
     public List<Coordinate> getAffectedCells() {
         return affectedCells;
     }

@@ -20,6 +20,7 @@ public class SheetDTO {
     private final int rowsHeightUnits;
     private final Map<CoordinateDTO, CellDTO> cells;
     private final List<Edge> edges;
+    private int counterChangedCells = 0;
 
     public SheetDTO(String sheetName, int version, int rowSize, int columnSize,
                     int columnWidthUnits, int rowsHeightUnits,
@@ -32,6 +33,10 @@ public class SheetDTO {
         this.rowsHeightUnits = rowsHeightUnits;
         this.cells = cells;
         this.edges = edges;
+    }
+
+    public int getCounterChangedCells() {
+        return counterChangedCells;
     }
 
     public String getSheetName() {
@@ -70,6 +75,7 @@ public class SheetDTO {
         Coordinate cord = CoordinateParser.parse(coordinate);
         return cells.get(new CoordinateDTO(cord.getRow(), cord.getColumn(), cord.getStringCord()));
     }
+
     @Override
     public String toString() {
         StringBuilder outputString = new StringBuilder();
@@ -118,7 +124,7 @@ public class SheetDTO {
     }
 
 
-    private static String centerText(String text, int width) {
+    private String centerText(String text, int width) {
         if (text == null) {
             text = "";
         }
@@ -132,6 +138,4 @@ public class SheetDTO {
 
         return leftPadding + text + rightPadding;
     }
-
-
 }

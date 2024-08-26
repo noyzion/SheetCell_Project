@@ -35,7 +35,7 @@ public class LogicImpl {
         return new CellDTO(
                 toCoordinateDTO(cell.getCoordinate()),
                 cell.getOriginalValue(),
-                cell.getEffectiveValue() != null ? cell.getEffectiveValue(): null, // Handle null effective value
+                cell.getEffectiveValue() != null ? cell.getEffectiveValue() : null, // Handle null effective value
                 cell.getVersion(),
                 cell.getRelatedCells(),
                 cell.getRelatedCells()
@@ -67,7 +67,11 @@ public class LogicImpl {
         Sheet currentSheet = mainSheet.getLast();
         Sheet newSheet = createNewSheetFrom(currentSheet);
         newSheet.updateVersion();
+
         newSheet.onCellUpdated(value, coordinate);
+        newSheet.getCell(coordinate).setVersion(newSheet.getVersion());
+        for(Coordinate cord : newSheet.getCell(coordinate).getAffectedCells())
+            newSheet.getCell(cord).setVersion(newSheet.getVersion());
         mainSheet.add(newSheet);
     }
 
@@ -140,12 +144,13 @@ public class LogicImpl {
         for (Map.Entry<Coordinate, Cell> entry : sheet.getCells().entrySet()) {
             Coordinate coordinate = entry.getKey();
             Cell cell = entry.getValue();
-            CoordinateDTO coordinateDTO = new CoordinateDTO(coordinate.getRow(), coordinate.getColumn(),coordinate.getStringCord());
+            CoordinateDTO coordinateDTO = new CoordinateDTO(coordinate.getRow(), coordinate.getColumn(), coordinate.getStringCord());
             CellDTO cellDTO = new CellDTO(coordinateDTO, cell.getOriginalValue(), cell.getEffectiveValue(), cell.getVersion(),
-                    cell.getRelatedCells(),cell.getAffectedCells());
+                    cell.getRelatedCells(), cell.getAffectedCells());
             cellDTOs.put(coordinateDTO, cellDTO);
         }
         return cellDTOs;
     }
+
 
 }
