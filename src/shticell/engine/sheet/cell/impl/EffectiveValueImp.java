@@ -16,7 +16,6 @@ import java.util.List;
 public class EffectiveValueImp implements EffectiveValue {
     private CellType cellType;
     private Object value;
-    private String expressionName;
     private final Coordinate coordinate;
 
     public EffectiveValueImp(Coordinate coordinate) {
@@ -34,26 +33,11 @@ public class EffectiveValueImp implements EffectiveValue {
     }
 
     @Override
-    public String getExpressionName() {
-        return expressionName;
-    }
-
-    @Override
     public EffectiveValue copy() {
         EffectiveValueImp copy = new EffectiveValueImp(this.coordinate);
         copy.cellType = this.cellType;
         copy.value = this.value;
-        copy.expressionName = this.expressionName;
         return copy;
-    }
-
-    @Override
-    public <T> T extractValueWithExpectation(Class<T> type) {
-        if (type.isInstance(value)) {
-            return type.cast(value);
-        }
-        // Handle error if needed
-        return null;
     }
 
     @Override
@@ -63,7 +47,6 @@ public class EffectiveValueImp implements EffectiveValue {
             this.cellType = CellType.STRING;
         } else if (originalValue.startsWith("{")) {
             Expression expr = stringToExpression(sheet, originalValue);
-            this.expressionName = expr.getOperationName();
             if (this.value == null)
                 this.value = expr.evaluate();
         } else {
@@ -121,7 +104,6 @@ public class EffectiveValueImp implements EffectiveValue {
         Expression res = null;
         try {
             res = getExpression(sheet, operator, args);
-            this.expressionName = res.getOperationName();
             this.value = res.evaluate();
 
             if (res instanceof Ref refExpr) {

@@ -100,9 +100,6 @@ public class LogicImpl {
         return newSheet;
     }
 
-    public void removeCell(String cellID) throws ParseException {
-
-    }
 
     public void addSheet(Sheet newSheet) {
         if (newSheet == null) {

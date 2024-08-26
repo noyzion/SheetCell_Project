@@ -9,10 +9,5 @@ public interface EffectiveValue {
 
     void calculateValue(Sheet sheet, String originalValue);
 
-    String getExpressionName();
-
-
-    <T> T extractValueWithExpectation(Class<T> type);
-
     EffectiveValue copy();
 }

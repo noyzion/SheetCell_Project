@@ -88,9 +88,6 @@ public class SheetImpl implements Sheet {
         return cells.get(coordinate);
     }
 
-    @Override
-    public void removeCell(Coordinate coordinate) {
-    }
 
     @Override
     public void onCellUpdated(String originalValue, Coordinate coordinate) {

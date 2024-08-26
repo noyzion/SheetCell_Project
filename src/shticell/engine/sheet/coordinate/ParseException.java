@@ -1,7 +1,7 @@
 package shticell.engine.sheet.coordinate;
 
 public class ParseException extends Exception {
-        private int errorOffset;
+        private final int errorOffset;
 
         public ParseException(String message, int errorOffset) {
             super(message);

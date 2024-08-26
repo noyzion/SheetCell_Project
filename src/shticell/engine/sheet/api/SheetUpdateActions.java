@@ -13,7 +13,5 @@ public interface SheetUpdateActions {
 
     void updateCells(Coordinate coordinate);
 
-    void removeCell(Coordinate coordinate);
-
     void updateVersion();
 }
