@@ -100,7 +100,7 @@ public class UIManager implements Menu {
         while (!validCalc) {
             try {
                 String newOriginalValue = getNewValueForCell(logic.getSheet().getCell(cellID));
-                if (Objects.equals(newOriginalValue, " ")) {
+                if (newOriginalValue.isBlank()) {
                     logic.setCellValue(cellID, null);
 
                 } else {
