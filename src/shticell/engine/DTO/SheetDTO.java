@@ -24,7 +24,7 @@ public class SheetDTO {
 
     public SheetDTO(String sheetName, int version, int rowSize, int columnSize,
                     int columnWidthUnits, int rowsHeightUnits,
-                    Map<CoordinateDTO, CellDTO> cells, List<Edge> edges) {
+                    Map<CoordinateDTO, CellDTO> cells, List<Edge> edges,int counterChangedCells) {
         this.sheetName = sheetName;
         this.version = version;
         this.rowSize = rowSize;
@@ -33,6 +33,7 @@ public class SheetDTO {
         this.rowsHeightUnits = rowsHeightUnits;
         this.cells = cells;
         this.edges = edges;
+        this.counterChangedCells = counterChangedCells;
     }
 
     public int getCounterChangedCells() {

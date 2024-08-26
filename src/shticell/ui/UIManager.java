@@ -198,15 +198,19 @@ public class UIManager implements Menu {
         System.out.println("-------------------------------");
         for (int i = 0; i < versions; i++) {
             int versionNumber = i + 1;
-            int changes = logic.getSheet().getCounterChangedCells();
+
+            int changes = logic.getSheetByVersion(i+1).getCounterChangedCells();
+            if(i+1 == 1)
+                changes = 0;
             System.out.printf("%-15d | %-17d%n", versionNumber, changes);
         }
     }
 
     private void displayVersions() {
-        displayVersionsTable(logic.getSheet().getCounterChangedCells());
-        int version = getVersionNumber(logic.getSheet().getCounterChangedCells());
+        displayVersionsTable(logic.getSheet().getVersion());
+        int version = getVersionNumber(logic.getSheet().getVersion());
         System.out.println("Displaying the state of the spreadsheet for version " + version + ":");
+        System.out.println(logic.getSheetByVersion(version).toString());
     }
 
     public int getVersionNumber(int numVersions) {

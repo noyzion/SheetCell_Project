@@ -55,7 +55,8 @@ public class LogicImpl {
                 sheet.getColumnWidthUnits(),
                 sheet.getRowsHeightUnits(),
                 cellDTOs,
-                sheet.getEdges()
+                sheet.getEdges(),
+                sheet.getCounterChangedCells()
         );
     }
 
@@ -100,8 +101,7 @@ public class LogicImpl {
     }
 
     public void removeCell(String cellID) throws ParseException {
-        Coordinate coordinate = CoordinateParser.parse(cellID);
-        mainSheet.getLast().removeCell(coordinate);
+
     }
 
     public void addSheet(Sheet newSheet) {
@@ -131,12 +131,13 @@ public class LogicImpl {
         int columnSize = sheet.getColSize();
         int columnWidthUnits = sheet.getColumnWidthUnits();
         int rowsHeightUnits = sheet.getRowsHeightUnits();
+        int counter = sheet.getCounterChangedCells();
 
         Map<CoordinateDTO, CellDTO> cellDTOs = getCoordinateDTOCellDTOMap(sheet);
 
         List<Edge> edges = sheet.getEdges();
 
-        return new SheetDTO(sheetName, version, rowSize, columnSize, columnWidthUnits, rowsHeightUnits, cellDTOs, edges);
+        return new SheetDTO(sheetName, version, rowSize, columnSize, columnWidthUnits, rowsHeightUnits, cellDTOs, edges,counter );
     }
 
     private static Map<CoordinateDTO, CellDTO> getCoordinateDTOCellDTOMap(Sheet sheet) {
