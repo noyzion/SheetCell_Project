@@ -105,6 +105,7 @@ public class SheetImpl implements Sheet {
 
         try {
             cell.setOriginalValue(originalValue);
+            removeDependence(cell);
             if (cell.getEffectiveValue() == null) {
                 cell.setEffectiveValue(new EffectiveValueImp(coordinate));
             }
@@ -130,9 +131,12 @@ public class SheetImpl implements Sheet {
     public void updateCells(Coordinate coordinate) {
         List<Cell> sortedCells = orderCellsForCalculation();
         for (Cell cell : sortedCells) {
+            EffectiveValue previousEffectiveValue = cell.getEffectiveValue();
             try {
                 if (cell.getEffectiveValue() != null) {
                     cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
+                    if(cell.getEffectiveValue() != previousEffectiveValue)
+                        removeDependence(cell);
                 }
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +
@@ -205,9 +209,20 @@ public class SheetImpl implements Sheet {
         return cells;
     }
 
+    public void removeEdge(Edge edge) {
+        edges.remove(edge);
+    }
+
     @Override
     public List<Edge> getEdges() {
         return edges;
     }
-
+    private void removeDependence(Cell cell) {
+        for (Coordinate cord : cell.getRelatedCells()) {
+            Cell dependentCell = this.getCell(cord);
+            dependentCell.getAffectedCells().remove(cell.getCoordinate());
+            this.removeEdge(new Edge(cord, cell.getCoordinate()));
+        }
+        cell.getRelatedCells().clear();
+    }
 }
