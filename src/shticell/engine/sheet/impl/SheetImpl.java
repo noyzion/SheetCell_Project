@@ -112,7 +112,10 @@ public class SheetImpl implements Sheet {
             updateCells(coordinate);
             cell.setOriginalValue(originalValue);
             counterChangedCells = 1 + cell.getAffectedCells().size();
-        } catch (Exception e) {
+        } catch (IllegalArgumentException e){
+            throw e;
+        }
+        catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
             updateCells(coordinate);

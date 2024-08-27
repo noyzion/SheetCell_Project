@@ -4,6 +4,7 @@ import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.UnaryExpression;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
@@ -35,13 +36,18 @@ public class Ref extends UnaryExpression {
             throw new IllegalArgumentException("Error parsing coordinate: " + coordinateStr, e);
         }
 
+
         Cell cell = sheet.getCell(refCoordinate);
-        if (Objects.equals(cell.getOriginalValue(), " ")) {
+
+        if (cell == null) {
+            cell = new CellImpl(refCoordinate, sheet.getRowsHeightUnits(), sheet.getRowsHeightUnits());
+            sheet.addCell(cell);
+            sheet.onCellUpdated(null, refCoordinate);
+            //throw new IllegalArgumentException("Cell at coordinate: " + coordinateStr + " is empty, you cant use it");
+        } else if (Objects.equals(cell.getOriginalValue(), " ")) {
             return Double.NaN;
         }
-        if (cell == null) {
-            throw new IllegalArgumentException("Cell at coordinate: " + coordinateStr + " is empty, you cant use it");
-        }
+
 
         return cell.getEffectiveValue().getValue();
     }
