@@ -48,7 +48,7 @@ public class UIManager implements Menu {
             try {
                 CellDTO cellDTO = logic.getSheet().getCell(coordinate);
                 if (cellDTO != null) {
-                    System.out.println(cellDTO.toString());
+                    System.out.println(cellDTO);
                 } else {
                     System.out.println("Cell " + coordinate + " is empty");
                 }

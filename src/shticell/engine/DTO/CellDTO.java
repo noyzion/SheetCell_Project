@@ -2,6 +2,7 @@ package shticell.engine.DTO;
 
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
+import shticell.engine.sheet.coordinate.CoordinateFactory;
 import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
 
@@ -53,7 +54,7 @@ public class CellDTO {
         String originalValueString = (originalValue == null) ? "cell is empty" : originalValue;
         String effectiveValueString = (effectiveValue.getValue() == null) ? "cell is empty" : effectiveValue.getValue().toString();
 
-        return "\n Coordinate: " + coordinate.getStringCord() +
+        return "\n Coordinate: " + coordinate.toString() +
                 "\n Original Value: " + originalValueString +
                 "\n Effective Value: " + effectiveValueString +
                 "\n Last Version Update: " + lastVersionUpdate +

@@ -27,7 +27,6 @@ public class Plus extends BinaryExpression {
         double num1 = (Double) e1;
         double num2 = (Double) e2;
 
-        // Perform addition
         return num1 + num2;
     }
 }

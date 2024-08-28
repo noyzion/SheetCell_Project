@@ -35,8 +35,7 @@ public class CoordinateImpl implements Coordinate {
 
     @Override
     public String toString() {
-        return String.format(CoordinateFactory.getKey(this));
-    }
+return stringCord;    }
 
     @Override
     public boolean equals(Object obj) {

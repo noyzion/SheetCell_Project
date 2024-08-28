@@ -23,10 +23,6 @@ public class CoordinateDTO {
         return column;
     }
 
-    public String getStringCord() {
-        return stringCord;
-    }
-
     @Override
     public boolean equals(Object object) {
         if (this == object)
@@ -43,5 +39,10 @@ public class CoordinateDTO {
         result = 31 * result + row;
         result = 31 * result + column;
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return stringCord;
     }
 }
