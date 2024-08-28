@@ -3,6 +3,7 @@ package shticell.engine.expression.impl.Operations;
 import jakarta.xml.bind.ValidationException;
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
 
 public class Times extends BinaryExpression {
     public Times(Expression expression1, Expression expression2) {
@@ -12,6 +13,12 @@ public class Times extends BinaryExpression {
     @Override
     public String getOperationName() {
         return "TIMES";
+    }
+
+
+    @Override
+    public CellType getCellType() {
+        return CellType.NUMERIC;
     }
 
     @Override

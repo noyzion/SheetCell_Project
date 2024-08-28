@@ -3,6 +3,7 @@ package shticell.engine.expression.impl.Operations;
 import jakarta.xml.bind.ValidationException;
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
 
 public class Pow extends BinaryExpression {
     public Pow(Expression expression1, Expression expression2) {
@@ -14,6 +15,10 @@ public class Pow extends BinaryExpression {
         return "POW";
     }
 
+    @Override
+    public CellType getCellType() {
+        return CellType.NUMERIC;
+    }
     @Override
     protected Object evaluate(Object e1, Object e2) {
         if (!(e1 instanceof Double)) {

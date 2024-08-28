@@ -2,6 +2,8 @@ package shticell.engine.expression.impl.Operations;
 
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
+import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 
 public class Concat extends BinaryExpression {
     public Concat(Expression expression1, Expression expression2) {
@@ -14,16 +16,22 @@ public class Concat extends BinaryExpression {
     }
 
     @Override
+    public CellType getCellType() {
+        return CellType.STRING;
+    }
+
+    @Override
     protected Object evaluate(Object e1, Object e2) {
         if (!(e1 instanceof String str1)) {
             String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
-            throw new IllegalArgumentException("Invalid type for the first argument: Expected String, but received " + actualType + ".");
+            return "!UNDEFINED!";
         }
 
         if (!(e2 instanceof String str2)) {
             String actualType = e2 == null ? "null" : e2.getClass().getSimpleName();
-            throw new IllegalArgumentException("Invalid type for the second argument: Expected String, but received " + actualType + ".");
+            return "!UNDEFINED!";
         }
+
         return str1 + str2;
     }
 }

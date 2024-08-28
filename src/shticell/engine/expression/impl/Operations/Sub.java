@@ -2,11 +2,18 @@ package shticell.engine.expression.impl.Operations;
 
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.TrinaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
 
 public class Sub extends TrinaryExpression {
 
     public Sub(Expression expression1, Expression expression2, Expression expression3) {
         super(expression1, expression2, expression3);
+    }
+
+
+    @Override
+    public CellType getCellType() {
+        return CellType.STRING;
     }
 
     @Override

@@ -56,7 +56,8 @@ public class XmlSheetValidator {
         int maxColumns = layout.getColumns();
         String maxCellID = ("A" + maxColumns) + maxRows;
 
-        for (STLCell cell : sheet.getSTLCells().getSTLCell()) {
+        for (STLCell cell : sheet.getSTLCells().getSTLCell())
+        {
             int row = cell.getRow();
             int column = columnToIndex(cell.getColumn().toUpperCase());
 

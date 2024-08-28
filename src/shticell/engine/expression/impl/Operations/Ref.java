@@ -4,6 +4,7 @@ import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.UnaryExpression;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.Cell;
+import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.impl.CellImpl;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateParser;
@@ -20,6 +21,11 @@ public class Ref extends UnaryExpression {
     public Ref(Expression expression1, Sheet sheet) {
         super(expression1);
         this.sheet = sheet;
+    }
+
+    @Override
+    public CellType getCellType() {
+        return CellType.EXPRESSION;
     }
 
     @Override

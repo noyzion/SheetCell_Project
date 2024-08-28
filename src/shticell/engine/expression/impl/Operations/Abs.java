@@ -2,6 +2,7 @@ package shticell.engine.expression.impl.Operations;
 
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.UnaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
 
 public class Abs extends UnaryExpression {
 
@@ -14,6 +15,10 @@ public class Abs extends UnaryExpression {
         return "ABS";
     }
 
+    @Override
+    public CellType getCellType() {
+        return CellType.NUMERIC;
+    }
     @Override
     protected Object evaluate(Object e1) {
         if (!(e1 instanceof Double)) {

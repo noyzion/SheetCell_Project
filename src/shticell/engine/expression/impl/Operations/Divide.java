@@ -2,6 +2,7 @@ package shticell.engine.expression.impl.Operations;
 
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.BinaryExpression;
+import shticell.engine.sheet.cell.api.CellType;
 
 public class Divide extends BinaryExpression {
 
@@ -12,6 +13,11 @@ public class Divide extends BinaryExpression {
     @Override
     public String getOperationName() {
         return "DIVIDE";
+    }
+
+    @Override
+    public CellType getCellType() {
+        return CellType.NUMERIC;
     }
 
     @Override

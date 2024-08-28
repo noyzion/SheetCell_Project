@@ -2,6 +2,7 @@ package shticell.engine.expression.impl;
 
 import shticell.engine.expression.api.Expression;
 import shticell.engine.expression.impl.Operations.Ref;
+import shticell.engine.sheet.cell.api.CellType;
 
 import javax.crypto.interfaces.PBEKey;
 
@@ -25,6 +26,11 @@ public class StringExpression implements Expression {
     @Override
     public String toString() {
         return string;
+    }
+
+    @Override
+    public CellType getCellType() {
+        return CellType.STRING;
     }
 
 }
