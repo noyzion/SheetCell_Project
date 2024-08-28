@@ -2,7 +2,9 @@ package shticell.engine.sheet.impl;
 
 import shticell.engine.sheet.coordinate.Coordinate;
 
-public class Edge {
+import java.io.Serializable;
+
+public class Edge implements Serializable {
     private final shticell.engine.sheet.coordinate.Coordinate from;
     private final Coordinate to;
 

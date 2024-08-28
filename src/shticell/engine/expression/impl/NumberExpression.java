@@ -12,10 +12,6 @@ public class NumberExpression implements Expression {
         this.value = value;
     }
 
-    public NumberExpression(String value) {
-        this.value = Double.parseDouble(value);
-    }
-
     @Override
     public Object evaluate() {
         return value;

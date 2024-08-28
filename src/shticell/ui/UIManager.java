@@ -121,7 +121,7 @@ public class UIManager implements Menu {
 
         while (!exit) {
             printMenu();
-            int choice = getUserChoice(6);
+            int choice = getUserChoice(8);
 
             switch (choice) {
                 case 1 -> getXmlFile();

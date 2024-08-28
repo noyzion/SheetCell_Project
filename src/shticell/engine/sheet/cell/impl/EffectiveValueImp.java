@@ -11,10 +11,11 @@ import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.impl.Edge;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EffectiveValueImp implements EffectiveValue {
+public class EffectiveValueImp implements EffectiveValue, Serializable {
     private CellType cellType;
     private Object value;
     private final Coordinate coordinate;

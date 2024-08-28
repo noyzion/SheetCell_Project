@@ -8,9 +8,10 @@ import shticell.engine.sheet.cell.impl.EffectiveValueImp;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
 
+import java.io.Serializable;
 import java.util.*;
 
-public class SheetImpl implements Sheet {
+public class SheetImpl implements Sheet, Serializable {
     private final Map<Coordinate, Cell> cells;
     private List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
     private final String sheetName;
