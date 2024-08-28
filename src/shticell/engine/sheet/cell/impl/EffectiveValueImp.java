@@ -46,7 +46,7 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
     public void calculateValue(Sheet sheet, String originalValue) {
         if (originalValue == null) {
          this.value = null;
-        } else if (originalValue.startsWith("{")) {
+        } else if (originalValue.startsWith("{") && originalValue.endsWith("}")) {
             Expression expr = stringToExpression(sheet, originalValue);
             if (this.value == null)
                 this.value = expr.evaluate();
