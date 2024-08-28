@@ -147,7 +147,7 @@ public class UIManager implements Menu {
 
         while (true) {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
-            String input = scanner.nextLine().trim();
+            String input = scanner.nextLine().trim().toUpperCase();
 
             try {
                 CoordinateFactory.isValidCoordinateFormat(input);

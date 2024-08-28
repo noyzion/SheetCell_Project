@@ -54,11 +54,11 @@ public class XmlSheetValidator {
         STLLayout layout = sheet.getSTLLayout();
         int maxRows = layout.getRows();
         int maxColumns = layout.getColumns();
-        String maxCellID = ("A" + maxColumns) + String.valueOf(maxRows);
+        String maxCellID = ("A" + maxColumns) + maxRows;
 
         for (STLCell cell : sheet.getSTLCells().getSTLCell()) {
             int row = cell.getRow();
-            int column = columnToIndex(cell.getColumn());
+            int column = columnToIndex(cell.getColumn().toUpperCase());
 
             if (row < 1 || row > maxRows || column < 1 || column > maxColumns) {
                 throw new IllegalArgumentException(String.format("%s cell is outside the sheet bounds. Cells bounds must be up to %s.",
