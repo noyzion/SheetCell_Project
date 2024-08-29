@@ -1,34 +1,24 @@
 package shticell.ui;
 
 import shticell.engine.DTO.CellDTO;
-import shticell.engine.DTO.CoordinateDTO;
 import shticell.engine.DTO.SheetDTO;
 import shticell.engine.logic.impl.LogicImpl;
 import shticell.engine.menu.Menu;
-import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
-import shticell.engine.sheet.coordinate.CoordinateParser;
 import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.xmlParser.XmlSheetLoader;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.io.*;
 import java.util.Scanner;
 
 public class UIManager implements Menu {
 
-    private final LogicImpl logic = new LogicImpl();
+    private LogicImpl logic = new LogicImpl();
 
     private void printMenu() {
-        System.out.println("(1) Read File");
-        System.out.println("(2) Display Spreadsheet");
-        System.out.println("(3) Display Single Cell");
-        System.out.println("(4) Update Single Cell");
-        System.out.println("(5) Display Versions");
-        System.out.println("(6) Exit");
+        for (MenuOption option : MenuOption.values()) {
+            System.out.println("(" + option.getValue() + ") " + option.getDescription());
+        }
     }
 
     @Override
@@ -79,7 +69,6 @@ public class UIManager implements Menu {
 
         }
         return userChoice;
-
     }
 
     @Override
@@ -121,20 +110,27 @@ public class UIManager implements Menu {
 
         while (!exit) {
             printMenu();
-            int choice = getUserChoice(8);
+            int choice = getUserChoice(MenuOption.values().length);
 
-            switch (choice) {
-                case 1 -> getXmlFile();
-                case 2 -> displaySpreadsheet();
-                case 3 -> displaySingleCell();
-                case 4 -> updateSingleCell(getCellCoordinate());
-                case 5 -> displayVersions();
-                case 6 -> exit = true;
-                default -> System.out.println("Invalid choice. Please try again.");
-            }
+            try {
+                MenuOption option = MenuOption.fromValue(choice);
 
-            if (!exit) {
-                System.out.println("Returning to menu...\n");
+                switch (option) {
+                    case READ_FILE -> getXmlFile();
+                    case DISPLAY_SPREADSHEET -> displaySpreadsheet();
+                    case DISPLAY_SINGLE_CELL -> displaySingleCell();
+                    case UPDATE_SINGLE_CELL -> updateSingleCell(getCellCoordinate());
+                    case DISPLAY_VERSIONS -> displayVersions();
+                    case SAVE_SYSTEM_STATE -> saveSystemState();
+                    case LOAD_SYSTEM_STATE -> loadSystemState();
+                    case EXIT -> exit = true;
+                }
+
+                if (!exit) {
+                    System.out.println("Returning to menu...\n");
+                }
+            } catch (IllegalArgumentException e) {
+                System.out.println("Invalid choice. Please try again.");
             }
         }
 
@@ -168,7 +164,6 @@ public class UIManager implements Menu {
         return coordinate;
     }
 
-
     private String getNewValueForCell(CellDTO cellDTO) {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the new value: ");
@@ -200,10 +195,7 @@ public class UIManager implements Menu {
         System.out.println("-------------------------------");
         for (int i = 0; i < versions; i++) {
             int versionNumber = i + 1;
-
             int changes = logic.getSheetByVersion(i+1).getCounterChangedCells();
-            if(i+1 == 1)
-                changes = 0;
             System.out.printf("%-15d | %-17d%n", versionNumber, changes);
         }
     }
@@ -230,5 +222,34 @@ public class UIManager implements Menu {
                 System.out.println("Please enter a valid integer.");
             }
         }
+    }
+
+    public void saveSystemState() {
+
+        String filePath = getFilePath() + ".dat";
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            out.writeObject(logic);
+            System.out.println("System state saved successfully to " + filePath);
+        } catch (IOException e) {
+            System.err.println("Error saving system state: " + e.getMessage());
+        }
+    }
+
+    public void loadSystemState() {
+
+        String filePath = getFilePath() + ".dat";
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            logic = (LogicImpl) in.readObject();
+            System.out.println("System state loaded successfully from " + filePath);
+            System.out.println(" " + filePath);
+        } catch (IOException | ClassNotFoundException e) {
+            System.err.println("Error loading system state: " + e.getMessage());
+        }
+    }
+
+    private String getFilePath() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Please enter the full file path to load the system state (without extension):");
+        return scanner.nextLine();
     }
 }

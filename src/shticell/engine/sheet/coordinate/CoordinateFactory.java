@@ -2,10 +2,11 @@ package shticell.engine.sheet.coordinate;
 
 import shticell.engine.sheet.api.Sheet;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CoordinateFactory {
+public class CoordinateFactory implements Serializable {
 
     private static final Map<String, Coordinate> cachedCoordinates = new HashMap<>();
 

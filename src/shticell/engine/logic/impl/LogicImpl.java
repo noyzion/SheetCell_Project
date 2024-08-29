@@ -1,5 +1,6 @@
 package shticell.engine.logic.impl;
 
+import java.io.Serializable;
 import java.util.*;
 import java.util.stream.Collectors;
 import shticell.engine.DTO.CellDTO;
@@ -15,7 +16,7 @@ import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.sheet.impl.Edge;
 import shticell.engine.sheet.impl.SheetImpl;
 
-public class LogicImpl {
+public class LogicImpl implements Serializable {
 
     private final List<Sheet> mainSheet = new ArrayList<>();
 
@@ -56,8 +57,7 @@ public class LogicImpl {
                 sheet.getRowsHeightUnits(),
                 cellDTOs,
                 sheet.getEdges(),
-                sheet.getCounterChangedCells()
-        );
+                sheet.getCounterChangedCells());
     }
 
     public void setCellValue(String cellId, String value) throws ParseException {
@@ -149,6 +149,4 @@ public class LogicImpl {
         }
         return cellDTOs;
     }
-
-
 }

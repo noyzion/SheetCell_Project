@@ -1,6 +1,8 @@
 package shticell.engine.sheet.coordinate;
 
-public class CoordinateParser {
+import java.io.Serializable;
+
+public class CoordinateParser implements Serializable {
 
         public static Coordinate parse(String coordinateString) throws ParseException {
             if (coordinateString == null || coordinateString.isEmpty()) {

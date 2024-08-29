@@ -5,10 +5,11 @@ import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
 import shticell.engine.sheet.coordinate.CoordinateImpl;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CellImpl implements Cell {
+public class CellImpl implements Cell, Serializable {
     private EffectiveValue effectiveValue;
     private String originalValue;
     private final Coordinate coordinate;

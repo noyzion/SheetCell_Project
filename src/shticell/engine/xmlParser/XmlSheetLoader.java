@@ -52,7 +52,7 @@ public class XmlSheetLoader {
         int rowSize = stlSheet.getSTLLayout().getRows();
         int columnSize = stlSheet.getSTLLayout().getColumns();
         STLCells stlCells = stlSheet.getSTLCells();
-        Sheet sheet = new SheetImpl(name,rowSize,columnSize,colWidthUnits,rowHeightUnits,1);
+        Sheet sheet = new SheetImpl(name, rowSize, columnSize, colWidthUnits, rowHeightUnits, 1);
 
         for (STLCell stlCell : stlCells.getSTLCell()) {
             String stringCord = stlCell.getColumn() + stlCell.getRow();
@@ -62,6 +62,7 @@ public class XmlSheetLoader {
             String originalValue = stlCell.getSTLOriginalValue();
             sheet.onCellUpdated(originalValue, coordinate);
         }
-        return sheet ;
+        sheet.setCounter(sheet.getCells().size());
+        return sheet;
     }
 }

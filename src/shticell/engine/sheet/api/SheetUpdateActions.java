@@ -14,4 +14,6 @@ public interface SheetUpdateActions {
     void updateCells(Coordinate coordinate);
 
     void updateVersion();
+
+    void setCounter(int counter);
 }

@@ -22,6 +22,7 @@ public class NumberExpression implements Expression {
     {
         return "Number";
     }
+
     @Override
     public String toString() {
         return String.valueOf(value);

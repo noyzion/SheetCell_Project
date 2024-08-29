@@ -35,11 +35,14 @@ public class SheetImpl implements Sheet, Serializable {
 
     }
 
+    @Override
+    public int getCounterChangedCells() {
+        return counterChangedCells;
+    }
 
     @Override
-    public int getCounterChangedCells()
-    {
-        return counterChangedCells;
+    public void setCounter(int counter) {
+        this.counterChangedCells = counter;
     }
 
     @Override
@@ -114,10 +117,9 @@ public class SheetImpl implements Sheet, Serializable {
             updateCells(coordinate);
             cell.setOriginalValue(originalValue);
             counterChangedCells = 1 + cell.getAffectedCells().size();
-        } catch (IllegalArgumentException e){
+        } catch (IllegalArgumentException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
             updateCells(coordinate);
@@ -136,7 +138,7 @@ public class SheetImpl implements Sheet, Serializable {
             try {
                 if (cell.getEffectiveValue() != null) {
                     cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
-                    if(cell.getEffectiveValue() != previousEffectiveValue)
+                    if (cell.getEffectiveValue() != previousEffectiveValue)
                         removeDependence(cell);
                 }
             } catch (IllegalArgumentException e) {
@@ -218,6 +220,7 @@ public class SheetImpl implements Sheet, Serializable {
     public List<Edge> getEdges() {
         return edges;
     }
+
     private void removeDependence(Cell cell) {
         for (Coordinate cord : cell.getRelatedCells()) {
             Cell dependentCell = this.getCell(cord);
