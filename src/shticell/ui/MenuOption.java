@@ -1,5 +1,7 @@
 package shticell.ui;
 
+import java.util.Arrays;
+
 public enum MenuOption {
     READ_FILE(1, "Read File"),
     DISPLAY_SPREADSHEET(2, "Display Spreadsheet"),
@@ -34,4 +36,12 @@ public enum MenuOption {
         }
         throw new IllegalArgumentException("Invalid menu option value: " + value);
     }
+
+    public static int getMaxDescriptionLength(){
+        return Arrays.stream(values())
+                .mapToInt(value -> value.description.length())
+                .max()
+                .orElse(0);
+    }
+
 }

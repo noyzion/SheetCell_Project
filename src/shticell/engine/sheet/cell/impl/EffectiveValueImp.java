@@ -133,87 +133,76 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
     private CellType validateArguments(String operator, List<Expression> args) {
         switch (operator) {
             case "PLUS", "MINUS", "TIMES", "DIVIDE", "MOD", "POW" -> {
-                validateArgumentCount(operator, args, 2);
-                validateNumericArguments(operator, args);
+                if (args.size() != 2) {
+                    throw new IllegalArgumentException(operator + " requires exactly 2 arguments, but got " + args.size());
+                }
+                if (args.get(0).getCellType() == CellType.STRING) {
+                    Expression e1 = args.getFirst();
+                    throw new IllegalArgumentException("First argument must be of type Double. Received: " + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
+                }
+                if (args.get(1).getCellType() == CellType.STRING) {
+                    Expression e1 = args.get(1);
+                    throw new IllegalArgumentException("Second argument must be of type Double. Received: " + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
+                }
+
                 return CellType.NUMERIC;
             }
-            case "CONCAT" -> {
-                validateArgumentCount(operator, args, 2);
-                validateStringArguments(operator, args);
+            case  "CONCAT" -> {
+                if (args.size() != 2) {
+                    throw new IllegalArgumentException(operator + " requires exactly 2 arguments, but got " + args.size());
+                }
+                if (args.get(0).getCellType() == CellType.NUMERIC) {
+                    Expression e1 = args.getFirst();
+                    throw new IllegalArgumentException("First argument must be of type String. Received: " + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
+                }
+                if (args.get(1).getCellType() == CellType.NUMERIC) {
+                    Expression e1 = args.get(1);
+                    throw new IllegalArgumentException("Second argument must be of type String. Received: " + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
+                }
                 return CellType.STRING;
             }
             case "ABS" -> {
-                validateArgumentCount(operator, args, 1);
-                validateSingleNumericArgument(operator, args);
+                if (args.size() != 1) {
+                    throw new IllegalArgumentException(operator + " requires exactly 1 argument, but got " + args.size());
+                }
+                if (args.get(0).getCellType() == CellType.STRING) {
+                    Expression e1 = args.getFirst();
+                    throw new IllegalArgumentException("Invalid argument type: Expected Double, but received " + e1.getCellType().getType().getSimpleName() + ".");
+                }
                 return CellType.NUMERIC;
             }
             case "SUB" -> {
-                validateArgumentCount(operator, args, 3);
-                validateSubArguments(operator, args);
+                if (args.size() != 3) {
+                    throw new IllegalArgumentException(operator + " requires exactly 3 arguments, but got " + args.size());
+                }
+                if (args.getFirst().getCellType() == CellType.NUMERIC) {
+                    Expression e1 = args.getFirst();
+                    throw new IllegalArgumentException("First argument must be a String. Received: "
+                            + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
+                }
+
+                if (args.get(1).getCellType() == CellType.STRING) {
+                    Expression e1 = args.get(1);
+                    throw new IllegalArgumentException("Second argument must be numeric. Received: "
+                            + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
+                }
+
+                if (args.get(2).getCellType() == CellType.STRING) {
+                    Expression e1 = args.get(1);
+                    throw new IllegalArgumentException("Third argument must be numeric. Received: "
+                            + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
+                }
                 return CellType.STRING;
             }
             case "REF" -> {
-                validateArgumentCount(operator, args, 1);
+                if (args.size() != 1) {
+                    throw new IllegalArgumentException(operator + " requires exactly 1 argument, but got " + args.size());
+                }
                 return CellType.EXPRESSION;
             }
             default -> throw new IllegalArgumentException("Unknown operator: " + operator);
         }
     }
-
-    private void validateArgumentCount(String operator, List<Expression> args, int expectedCount) {
-        if (args.size() != expectedCount) {
-            throw new IllegalArgumentException(operator + " requires exactly " + expectedCount + " argument(s), but got " + args.size());
-        }
-    }
-
-    private void validateNumericArguments(String operator, List<Expression> args) {
-        for (int i = 0; i < 2; i++) {
-            if (args.get(i).getCellType() == CellType.STRING) {
-                throw new IllegalArgumentException(
-                        String.format("%s argument %d must be of type Double. Received: %s",
-                                operator, i + 1, args.get(i).getCellType().getType().getSimpleName())
-                );
-            }
-        }
-    }
-
-    private void validateStringArguments(String operator, List<Expression> args) {
-        for (int i = 0; i < 2; i++) {
-            if (args.get(i).getCellType() == CellType.NUMERIC) {
-                throw new IllegalArgumentException(
-                        String.format("%s argument %d must be of type String. Received: %s",
-                                operator, i + 1, args.get(i).getCellType().getType().getSimpleName())
-                );
-            }
-        }
-    }
-
-    private void validateSingleNumericArgument(String operator, List<Expression> args) {
-        if (args.get(0).getCellType() == CellType.STRING) {
-            throw new IllegalArgumentException(
-                    String.format("%s argument must be of type Double. Received: %s",
-                            operator, args.get(0).getCellType().getType().getSimpleName())
-            );
-        }
-    }
-
-    private void validateSubArguments(String operator, List<Expression> args) {
-        if (args.get(0).getCellType() == CellType.NUMERIC) {
-            throw new IllegalArgumentException(
-                    String.format("%s first argument must be a String. Received: %s",
-                            operator, args.get(0).getCellType().getType().getSimpleName())
-            );
-        }
-        for (int i = 1; i < 3; i++) {
-            if (args.get(i).getCellType() == CellType.STRING) {
-                throw new IllegalArgumentException(
-                        String.format("%s argument %d must be numeric. Received: %s",
-                                operator, i + 1, args.get(i).getCellType().getType().getSimpleName())
-                );
-            }
-        }
-    }
-
 
     private Expression createExpression(Sheet sheet, String operator, List<Expression> args) {
         return switch (operator) {

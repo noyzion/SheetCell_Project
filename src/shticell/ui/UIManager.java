@@ -7,7 +7,6 @@ import shticell.engine.menu.Menu;
 import shticell.engine.sheet.coordinate.CoordinateFactory;
 import shticell.engine.sheet.coordinate.ParseException;
 import shticell.engine.xmlParser.XmlSheetLoader;
-
 import java.io.*;
 import java.util.Scanner;
 
@@ -17,6 +16,7 @@ public class UIManager implements Menu {
     private boolean isSheetLoaded = false;
 
     private void printMenu() {
+        System.out.println(" ".repeat(MenuOption.getMaxDescriptionLength() / 2) + "Menu:\n" + "=".repeat(MenuOption.getMaxDescriptionLength() + 6));
         for (MenuOption option : MenuOption.values()) {
             System.out.println("(" + option.getValue() + ") " + option.getDescription());
         }
@@ -96,7 +96,6 @@ public class UIManager implements Menu {
                 } else {
                     logic.setCellValue(cellID, newOriginalValue);
                     System.out.println("Cell updated successfully.");
-                    int counter = 1 + logic.getSheet().getCell(cellID).getAffectedCells().size();
                 }
                 validCalc = true;
             } catch (Exception e) {
@@ -105,6 +104,9 @@ public class UIManager implements Menu {
         }
         displaySpreadsheet();
     }
+
+
+
     private void checkSheetLoaded() {
         if (!isSheetLoaded) {
             throw new IllegalStateException("No sheet loaded. Please load a sheet first.");
