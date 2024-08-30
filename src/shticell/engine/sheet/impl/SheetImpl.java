@@ -143,11 +143,8 @@ public class SheetImpl implements Sheet, Serializable {
                 }
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +
-                        cell.getCoordinate().getStringCord() +
-                        " due to change in cell at " +
-                        coordinate.getStringCord() +
-                        ": \n" +
-                        e.getMessage());
+                        cell.getCoordinate().getStringCord()  +
+                         " because " + e.getMessage());
             }
         }
     }

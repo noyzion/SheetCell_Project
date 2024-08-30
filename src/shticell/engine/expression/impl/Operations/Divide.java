@@ -22,6 +22,12 @@ public class Divide extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
+        if (e1 == null) {
+            throw new IllegalArgumentException("First argument cannot be empty.");
+        }
+        if (e2 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
         if (!(e1 instanceof Double)) {
             String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
             throw new IllegalArgumentException("Invalid type for the first argument: Expected Double, but received " + actualType + ".");

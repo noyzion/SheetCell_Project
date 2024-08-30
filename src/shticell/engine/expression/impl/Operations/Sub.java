@@ -23,6 +23,15 @@ public class Sub extends TrinaryExpression {
 
     @Override
     protected Object evaluate(Object evaluate1, Object evaluate2, Object evaluate3) {
+        if (evaluate1 == null) {
+            throw new IllegalArgumentException("First argument cannot be empty.");
+        }
+        if (evaluate2 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
+        if (evaluate3 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
         if (!(evaluate1 instanceof String str1)) {
             throw new IllegalArgumentException("First argument must be a String. Received: "
                     + (evaluate1 != null ? evaluate1.getClass().getSimpleName() : "null"));

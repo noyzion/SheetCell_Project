@@ -23,6 +23,12 @@ public class Times extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
+        if (e1 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
+        if (e2 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
         if (!(e1 instanceof Double)) {
             throw new IllegalArgumentException("First argument must be numeric. Received: " + e1.getClass().getSimpleName());
         }

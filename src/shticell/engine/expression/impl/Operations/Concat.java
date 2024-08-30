@@ -22,6 +22,12 @@ public class Concat extends BinaryExpression {
 
     @Override
     protected Object evaluate(Object e1, Object e2) {
+        if (e1 == null) {
+            throw new IllegalArgumentException("First argument cannot be empty.");
+        }
+        if (e2 == null) {
+            throw new IllegalArgumentException("Second argument cannot be empty.");
+        }
         if (!(e1 instanceof String str1)) {
             String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
             return "!UNDEFINED!";

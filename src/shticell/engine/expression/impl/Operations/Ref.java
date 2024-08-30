@@ -31,7 +31,7 @@ public class Ref extends UnaryExpression {
     @Override
     protected Object evaluate(Object object) throws NumberFormatException {
         if (!(object instanceof String coordinateStr)) {
-            throw new IllegalArgumentException("The argument must be a String. Provided: " + object.getClass().getName());
+            throw new IllegalArgumentException("The argument must be a coordinate. Provided: " + object.getClass().getSimpleName());
         }
 
         try {

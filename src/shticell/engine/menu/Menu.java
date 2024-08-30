@@ -6,14 +6,17 @@ import shticell.engine.sheet.coordinate.ParseException;
 
 public interface Menu {
 
-  public void getXmlFile();
+   void getXmlFile();
 
-  public void displaySpreadsheet();
+   void displaySpreadsheet();
 
-  public void displaySingleCell();
+   void displaySingleCell();
 
-  public void updateSingleCell(String cord);
+   void updateSingleCell();
 
-  //public void showSheetVersions();
-  //public void exit();
+  void displayVersions();
+
+  void loadSystemState();
+
+  void saveSystemState();
 }

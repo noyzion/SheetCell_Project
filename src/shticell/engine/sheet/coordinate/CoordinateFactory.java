@@ -16,8 +16,8 @@ public class CoordinateFactory implements Serializable {
 
     public static Coordinate createCoordinate(Sheet sheet, int row, int column, String cord) throws IndexOutOfBoundsException {
         if (row < 0 || row >= sheet.getRowSize() || column < 0 || column >= sheet.getColSize()) {
-            throw new IndexOutOfBoundsException("Please enter a valid row/column number, between 1 and " +
-                    (sheet.getRowSize()) + " for rows and " +
+            throw new IndexOutOfBoundsException("Please enter a valid row/column number, between 1 to " +
+                    (sheet.getRowSize()) + " for rows and between A to " +
                     convertIndexToColumnLetter(sheet.getColSize()) + " for columns.");
         }
 

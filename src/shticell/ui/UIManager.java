@@ -14,6 +14,7 @@ import java.util.Scanner;
 public class UIManager implements Menu {
 
     private LogicImpl logic = new LogicImpl();
+    private boolean isSheetLoaded = false;
 
     private void printMenu() {
         for (MenuOption option : MenuOption.values()) {
@@ -23,16 +24,14 @@ public class UIManager implements Menu {
 
     @Override
     public void displaySpreadsheet() {
+        checkSheetLoaded();
         SheetDTO sheetDTO = logic.getSheet();
-        if (sheetDTO != null) {
-            System.out.println(sheetDTO.toString());
-        } else {
-            System.out.println("No sheet loaded.");
-        }
+        System.out.println(sheetDTO.toString());
     }
 
     @Override
     public void displaySingleCell() {
+        checkSheetLoaded();
         String coordinate = getCellCoordinate();
         if (coordinate != null) {
             try {
@@ -72,7 +71,9 @@ public class UIManager implements Menu {
     }
 
     @Override
-    public void updateSingleCell(String cellID) {
+    public void updateSingleCell() {
+        checkSheetLoaded();
+       String cellID = getCellCoordinate();
         try {
             if (logic.getSheet().getCell(cellID) == null)
                 System.out.println("Cell at: " + cellID + " is empty");
@@ -88,7 +89,7 @@ public class UIManager implements Menu {
         boolean validCalc = false;
         while (!validCalc) {
             try {
-                String newOriginalValue = getNewValueForCell(logic.getSheet().getCell(cellID));
+                String newOriginalValue = getNewValueForCell();
                 if (newOriginalValue.isBlank()) {
                     logic.setCellValue(cellID, null);
 
@@ -104,7 +105,11 @@ public class UIManager implements Menu {
         }
         displaySpreadsheet();
     }
-
+    private void checkSheetLoaded() {
+        if (!isSheetLoaded) {
+            throw new IllegalStateException("No sheet loaded. Please load a sheet first.");
+        }
+    }
     public void start() {
         boolean exit = false;
 
@@ -119,7 +124,7 @@ public class UIManager implements Menu {
                     case READ_FILE -> getXmlFile();
                     case DISPLAY_SPREADSHEET -> displaySpreadsheet();
                     case DISPLAY_SINGLE_CELL -> displaySingleCell();
-                    case UPDATE_SINGLE_CELL -> updateSingleCell(getCellCoordinate());
+                    case UPDATE_SINGLE_CELL -> updateSingleCell();
                     case DISPLAY_VERSIONS -> displayVersions();
                     case SAVE_SYSTEM_STATE -> saveSystemState();
                     case LOAD_SYSTEM_STATE -> loadSystemState();
@@ -132,6 +137,10 @@ public class UIManager implements Menu {
             } catch (IllegalArgumentException e) {
                 System.out.println("Invalid choice. Please try again.");
             }
+           catch  (IllegalStateException e)
+            {
+                System.out.println(e.getMessage());
+            }
         }
 
         System.out.println("Exiting program. Goodbye!");
@@ -139,7 +148,7 @@ public class UIManager implements Menu {
 
     private String getCellCoordinate() {
         Scanner scanner = new Scanner(System.in);
-        String coordinate = null;
+        String coordinate;
 
         while (true) {
             System.out.print("Please enter the cell coordinate (e.g., A5): ");
@@ -164,7 +173,7 @@ public class UIManager implements Menu {
         return coordinate;
     }
 
-    private String getNewValueForCell(CellDTO cellDTO) {
+    private String getNewValueForCell() {
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the new value: ");
         return scanner.nextLine();
@@ -181,6 +190,7 @@ public class UIManager implements Menu {
 
             try {
                 logic.addSheet(XmlSheetLoader.fromXmlFileToObject(filePath));
+                isSheetLoaded = true;
                 System.out.println("Sheet loaded successfully.");
                 validInput = true;
             } catch (Exception e) {
@@ -191,6 +201,7 @@ public class UIManager implements Menu {
     }
 
     private void displayVersionsTable(int versions) {
+
         System.out.println("Version Number | Number of Changes");
         System.out.println("-------------------------------");
         for (int i = 0; i < versions; i++) {
@@ -200,14 +211,16 @@ public class UIManager implements Menu {
         }
     }
 
-    private void displayVersions() {
+    @Override
+    public void displayVersions() {
+        checkSheetLoaded();
         displayVersionsTable(logic.getSheet().getVersion());
         int version = getVersionNumber(logic.getSheet().getVersion());
         System.out.println("Displaying the state of the spreadsheet for version " + version + ":");
         System.out.println(logic.getSheetByVersion(version).toString());
     }
 
-    public int getVersionNumber(int numVersions) {
+    private int getVersionNumber(int numVersions) {
         Scanner scanner = new Scanner(System.in);
         while (true) {
             System.out.print("Please enter the version number to view: ");
@@ -224,8 +237,9 @@ public class UIManager implements Menu {
         }
     }
 
+    @Override
     public void saveSystemState() {
-
+        checkSheetLoaded();
         String filePath = getFilePath() + ".dat";
         try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
             out.writeObject(logic);
@@ -235,6 +249,7 @@ public class UIManager implements Menu {
         }
     }
 
+    @Override
     public void loadSystemState() {
 
         String filePath = getFilePath() + ".dat";
@@ -246,6 +261,7 @@ public class UIManager implements Menu {
             System.err.println("Error loading system state: " + e.getMessage());
         }
     }
+
 
     private String getFilePath() {
         Scanner scanner = new Scanner(System.in);
