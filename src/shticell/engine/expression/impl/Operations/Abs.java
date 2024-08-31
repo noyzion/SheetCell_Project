@@ -26,8 +26,7 @@ public class Abs extends UnaryExpression {
         }
 
         if (!(e1 instanceof Double)) {
-            String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
-            throw new IllegalArgumentException("Invalid argument type: Expected Double, but received " + actualType + ".");
+            return Double.NaN;
         }
         double num = (Double) e1;
         return Math.abs(num);

@@ -27,14 +27,9 @@ public class Pow extends BinaryExpression {
         if (e2 == null) {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
-        if (!(e1 instanceof Double)) {
-            throw new IllegalArgumentException("Base argument must be numeric. Received: " + (e1 != null ? e1.getClass().getSimpleName() : "null"));
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            return Double.NaN;
         }
-
-        if (!(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Exponent argument must be numeric. Received: " + (e2 != null ? e2.getClass().getSimpleName() : "null"));
-        }
-
 
         double base = (Double) e1;
         double exponent = (Double) e2;

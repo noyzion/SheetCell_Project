@@ -8,10 +8,6 @@ public class ParseException extends Exception {
             this.errorOffset = errorOffset;
         }
 
-        public int getErrorOffset() {
-            return errorOffset;
-        }
-
         @Override
         public String toString() {
             return super.toString() + " (at offset " + errorOffset + ")";

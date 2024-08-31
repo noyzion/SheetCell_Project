@@ -31,14 +31,8 @@ public class Minus extends BinaryExpression {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
 
-        if (!(e1 instanceof Double)) {
-            throw new IllegalArgumentException("First argument must be numeric. Received: "
-                    + (e1 != null ? e1.getClass().getSimpleName() : "null"));
-        }
-
-        if (!(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Second argument must be numeric. Received: "
-                    + (e2 != null ? e2.getClass().getSimpleName() : "null"));
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+          return Double.NaN;
         }
 
         double num1 = (Double) e1;

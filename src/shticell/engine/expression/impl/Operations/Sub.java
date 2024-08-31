@@ -32,22 +32,10 @@ public class Sub extends TrinaryExpression {
         if (evaluate3 == null) {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
-        if (!(evaluate1 instanceof String str1)) {
-            throw new IllegalArgumentException("First argument must be a String. Received: "
-                    + (evaluate1 != null ? evaluate1.getClass().getSimpleName() : "null"));
+        if (!(evaluate1 instanceof String str1) || !(evaluate2 instanceof Double num2) || !(evaluate3 instanceof Double num3) ) {
+            return "!UNDEFINED!";
         }
 
-        if (!(evaluate2 instanceof Double num2)) {
-            throw new IllegalArgumentException("Second argument must be numeric. Received: "
-                    + (evaluate2 != null ? evaluate2.getClass().getSimpleName() : "null"));
-        }
-
-        if (!(evaluate3 instanceof Double num3)) {
-            throw new IllegalArgumentException("Third argument must be numeric. Received: "
-                    + (evaluate3 != null ? evaluate3.getClass().getSimpleName() : "null"));
-        }
-
-        // Validate that both indices are whole numbers
         if (isWholeNumber(num2)) {
             throw new IllegalArgumentException("Second argument must be a whole number. Received: " + num2);
         }

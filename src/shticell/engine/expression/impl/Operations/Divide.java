@@ -28,15 +28,9 @@ public class Divide extends BinaryExpression {
         if (e2 == null) {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
-        if (!(e1 instanceof Double)) {
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
             String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
-            throw new IllegalArgumentException("Invalid type for the first argument: Expected Double, but received " + actualType + ".");
-        }
-
-        if (!(e2 instanceof Double)) {
-            String actualType = e2 == null ? "null" : e2.getClass().getSimpleName();
-            throw new IllegalArgumentException("Invalid type for the second argument: Expected Double, but received " + actualType + ".");
-        }
+return Double.NaN;        }
 
 
         double numerator = (Double) e1;

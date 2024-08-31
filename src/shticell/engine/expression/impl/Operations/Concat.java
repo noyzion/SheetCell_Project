@@ -29,12 +29,10 @@ public class Concat extends BinaryExpression {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
         if (!(e1 instanceof String str1)) {
-            String actualType = e1 == null ? "null" : e1.getClass().getSimpleName();
             return "!UNDEFINED!";
         }
 
         if (!(e2 instanceof String str2)) {
-            String actualType = e2 == null ? "null" : e2.getClass().getSimpleName();
             return "!UNDEFINED!";
         }
 

@@ -75,7 +75,7 @@ public class UIManager implements Menu {
         checkSheetLoaded();
        String cellID = getCellCoordinate();
         try {
-            if (logic.getSheet().getCell(cellID) == null)
+            if (logic.getSheet().getCell(cellID) == null || logic.getSheet().getCell(cellID).getOriginalValue() == null)
                 System.out.println("Cell at: " + cellID + " is empty");
             else {
                 System.out.println("Cell at: " + cellID);
@@ -196,7 +196,7 @@ public class UIManager implements Menu {
                 System.out.println("Sheet loaded successfully.");
                 validInput = true;
             } catch (Exception e) {
-                System.out.print("Error loading file: " + e.getMessage() + " Please try again.");
+                System.out.print("Error loading file: " + e.getMessage() + "\n Please try again.");
                 System.out.println();
             }
         }

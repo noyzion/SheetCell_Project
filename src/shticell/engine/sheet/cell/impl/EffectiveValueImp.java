@@ -1,11 +1,12 @@
 package shticell.engine.sheet.cell.impl;
 
 import shticell.engine.expression.api.Expression;
+import shticell.engine.expression.api.ExpressionFactory;
+import shticell.engine.expression.impl.ExpressionFactoryImpl;
 import shticell.engine.expression.impl.NumberExpression;
 import shticell.engine.expression.impl.Operations.*;
 import shticell.engine.expression.impl.StringExpression;
 import shticell.engine.sheet.api.Sheet;
-import shticell.engine.sheet.cell.api.Cell;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.cell.api.EffectiveValue;
 import shticell.engine.sheet.coordinate.Coordinate;
@@ -14,11 +15,13 @@ import shticell.engine.sheet.impl.Edge;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class EffectiveValueImp implements EffectiveValue, Serializable {
     private CellType cellType;
     private Object value;
     private final Coordinate coordinate;
+    private final ExpressionFactory expressionFactory = new ExpressionFactoryImpl();
 
     public EffectiveValueImp(Coordinate coordinate) {
         this.coordinate = coordinate;
@@ -33,6 +36,7 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
     public Object getValue() {
         return value;
     }
+
 
     @Override
     public EffectiveValue copy() {
@@ -102,7 +106,7 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
             args.add(stringToExpression(sheet, expression[i]));
         }
 
-        Expression res = null;
+        Expression res;
             res = getExpression(sheet, operator, args);
             this.value = res.evaluate();
 
@@ -126,98 +130,9 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
     }
 
     private Expression getExpression(Sheet sheet, String operator, List<Expression> args) {
-       this.cellType = validateArguments(operator, args);
-        return createExpression(sheet, operator, args);
-    }
+        this.cellType = expressionFactory.validateArguments(operator, args,coordinate);
+        return expressionFactory.createExpression(sheet, operator, args);
 
-    private CellType validateArguments(String operator, List<Expression> args) {
-        switch (operator) {
-            case "PLUS", "MINUS", "TIMES", "DIVIDE", "MOD", "POW" -> {
-                if (args.size() != 2) {
-                    throw new IllegalArgumentException(operator + " requires exactly 2 arguments, but got " + args.size());
-                }
-                if (args.get(0).getCellType() == CellType.STRING) {
-                    Expression e1 = args.getFirst();
-                    throw new IllegalArgumentException("First argument must be of type Double. Received: " + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
-                }
-                if (args.get(1).getCellType() == CellType.STRING) {
-                    Expression e1 = args.get(1);
-                    throw new IllegalArgumentException("Second argument must be of type Double. Received: " + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
-                }
-
-                return CellType.NUMERIC;
-            }
-            case  "CONCAT" -> {
-                if (args.size() != 2) {
-                    throw new IllegalArgumentException(operator + " requires exactly 2 arguments, but got " + args.size());
-                }
-                if (args.get(0).getCellType() == CellType.NUMERIC) {
-                    Expression e1 = args.getFirst();
-                    throw new IllegalArgumentException("First argument must be of type String. Received: " + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
-                }
-                if (args.get(1).getCellType() == CellType.NUMERIC) {
-                    Expression e1 = args.get(1);
-                    throw new IllegalArgumentException("Second argument must be of type String. Received: " + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
-                }
-                return CellType.STRING;
-            }
-            case "ABS" -> {
-                if (args.size() != 1) {
-                    throw new IllegalArgumentException(operator + " requires exactly 1 argument, but got " + args.size());
-                }
-                if (args.get(0).getCellType() == CellType.STRING) {
-                    Expression e1 = args.getFirst();
-                    throw new IllegalArgumentException("Invalid argument type: Expected Double, but received " + e1.getCellType().getType().getSimpleName() + ".");
-                }
-                return CellType.NUMERIC;
-            }
-            case "SUB" -> {
-                if (args.size() != 3) {
-                    throw new IllegalArgumentException(operator + " requires exactly 3 arguments, but got " + args.size());
-                }
-                if (args.getFirst().getCellType() == CellType.NUMERIC) {
-                    Expression e1 = args.getFirst();
-                    throw new IllegalArgumentException("First argument must be a String. Received: "
-                            + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
-                }
-
-                if (args.get(1).getCellType() == CellType.STRING) {
-                    Expression e1 = args.get(1);
-                    throw new IllegalArgumentException("Second argument must be numeric. Received: "
-                            + (e1 != null ? e1.getCellType().getType().getSimpleName() : "null"));
-                }
-
-                if (args.get(2).getCellType() == CellType.STRING) {
-                    Expression e1 = args.get(1);
-                    throw new IllegalArgumentException("Third argument must be numeric. Received: "
-                            + (e1 != null ?  e1.getCellType().getType().getSimpleName() : "null"));
-                }
-                return CellType.STRING;
-            }
-            case "REF" -> {
-                if (args.size() != 1) {
-                    throw new IllegalArgumentException(operator + " requires exactly 1 argument, but got " + args.size());
-                }
-                return CellType.EXPRESSION;
-            }
-            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
-        }
-    }
-
-    private Expression createExpression(Sheet sheet, String operator, List<Expression> args) {
-        return switch (operator) {
-            case "PLUS" -> new Plus(args.get(0), args.get(1));
-            case "MINUS" -> new Minus(args.get(0), args.get(1));
-            case "TIMES" -> new Times(args.get(0), args.get(1));
-            case "DIVIDE" -> new Divide(args.get(0), args.get(1));
-            case "MOD" -> new Mod(args.get(0), args.get(1));
-            case "POW" -> new Pow(args.get(0), args.get(1));
-            case "ABS" -> new Abs(args.get(0));
-            case "CONCAT" -> new Concat(args.get(0), args.get(1));
-            case "SUB" -> new Sub(args.get(0), args.get(1), args.get(2));
-            case "REF" -> new Ref(args.get(0), sheet);
-            default -> throw new IllegalArgumentException("Unknown operator: " + operator);
-        };
     }
 
     private Expression stringToExpression(Sheet sheet, String input) {
@@ -241,4 +156,20 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
             this.cellType = CellType.STRING;
         }
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        EffectiveValueImp other = (EffectiveValueImp) obj;
+        return Objects.equals(cellType, other.cellType) &&
+                Objects.equals(value, other.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(cellType, value);
+    }
+
+
 }

@@ -13,7 +13,7 @@ import java.util.*;
 
 public class SheetImpl implements Sheet, Serializable {
     private final Map<Coordinate, Cell> cells;
-    private List<Edge> edges = new ArrayList<>(); // רשימת קשתות (רק לתאים עם REF)
+    private List<Edge> edges = new ArrayList<>();
     private final String sheetName;
     private int version;
     private final int rowSize;
@@ -30,7 +30,6 @@ public class SheetImpl implements Sheet, Serializable {
         this.columnSize = columnSize;
         this.columnWidthUnits = columnWidthUnits;
         this.rowsHeightUnits = rowsHeightUnits;
-        this.counterChangedCells = 0;
         this.version = version++;
 
     }
@@ -95,13 +94,12 @@ public class SheetImpl implements Sheet, Serializable {
 
     @Override
     public void onCellUpdated(String originalValue, Coordinate coordinate) {
-        counterChangedCells = 0;
         String previousOriginalValue = null;
         EffectiveValue previousEffectiveValue = null;
         Cell cell = cells.get(coordinate);
         if (cell != null) {
             previousOriginalValue = cell.getOriginalValue();
-            previousEffectiveValue = cell.getEffectiveValue();
+            previousEffectiveValue = cell.getEffectiveValue() != null ? cell.getEffectiveValue().copy() : null;
         } else {
             cell = new CellImpl(coordinate, rowsHeightUnits, columnWidthUnits);
             addCell(cell);
@@ -114,12 +112,15 @@ public class SheetImpl implements Sheet, Serializable {
                 cell.setEffectiveValue(new EffectiveValueImp(coordinate));
             }
             cell.getEffectiveValue().calculateValue(this, originalValue);
+            if (!cell.getEffectiveValue().equals(previousEffectiveValue))
+                counterChangedCells++;
             updateCells(coordinate);
             cell.setOriginalValue(originalValue);
-            counterChangedCells = 1 + cell.getAffectedCells().size();
-        } catch (IllegalArgumentException e) {
+        }
+        catch (IllegalArgumentException e) {
             throw e;
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             cell.setOriginalValue(previousOriginalValue);
             cell.setEffectiveValue(previousEffectiveValue);
             updateCells(coordinate);
@@ -130,16 +131,19 @@ public class SheetImpl implements Sheet, Serializable {
         }
     }
 
+
     @Override
     public void updateCells(Coordinate coordinate) {
         List<Cell> sortedCells = orderCellsForCalculation();
         for (Cell cell : sortedCells) {
-            EffectiveValue previousEffectiveValue = cell.getEffectiveValue();
+            EffectiveValue previousEffectiveValue = cell.getEffectiveValue() != null ? cell.getEffectiveValue().copy() : null;
             try {
                 if (cell.getEffectiveValue() != null) {
                     cell.getEffectiveValue().calculateValue(this, cell.getOriginalValue());
-                    if (cell.getEffectiveValue() != previousEffectiveValue)
+                    if (!cell.getEffectiveValue().equals(previousEffectiveValue)) {
                         removeDependence(cell);
+                        counterChangedCells++;
+                    }
                 }
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("error while updating cell at " +

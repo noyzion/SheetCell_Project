@@ -28,12 +28,10 @@ public class Plus extends BinaryExpression {
         if (e2 == null) {
             throw new IllegalArgumentException("Second argument cannot be empty.");
         }
-        if (!(e1 instanceof Double)) {
-            throw new IllegalArgumentException("First argument must be of type Double. Received: " + e1.getClass().getSimpleName());
+        if (!(e1 instanceof Double) || !(e2 instanceof Double)) {
+            return Double.NaN;
         }
-        if (!(e2 instanceof Double)) {
-            throw new IllegalArgumentException("Second argument must be of type Double. Received: " + e2.getClass().getSimpleName());
-        }
+
         double num1 = (Double) e1;
         double num2 = (Double) e2;
 
