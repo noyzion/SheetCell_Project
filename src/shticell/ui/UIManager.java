@@ -241,33 +241,66 @@ public class UIManager implements Menu {
 
     @Override
     public void saveSystemState() {
+        Scanner scanner = new Scanner(System.in);
         checkSheetLoaded();
-        String filePath = getFilePath() + ".dat";
-        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
-            out.writeObject(logic);
-            System.out.println("System state saved successfully to " + filePath);
-        } catch (IOException e) {
-            System.err.println("Error saving system state: " + e.getMessage());
+        System.out.print("Please enter the full file path to save the system state (without extension): ");
+        String filePath = scanner.nextLine();
+        System.out.print("Please enter the desired file name to save the system state: ");
+        String fileName = scanner.nextLine();
+
+        while (!isValidFileName(fileName)) {
+            System.out.println("Invalid file name. Please avoid using special characters like \\ / : * ? \" < > | and try again.");
+            System.out.print("Please try again: ");
+             fileName = scanner.nextLine();
         }
+
+        String fullPath = filePath + File.separator + fileName + ".dat";
+
+        if (!saveSystemStateHelper(fullPath)) {
+            System.out.println("Please try again: ");
+            saveSystemState();
+        }
+        System.out.println("System state saved successfully to " + fullPath);
     }
 
     @Override
     public void loadSystemState() {
+        Scanner scanner = new Scanner(System.in);
+        System.out.print("Please enter the full file path to load the system state (without extension): ");
+        String filePath = scanner.nextLine();
+        String fullPath = filePath + ".dat";
 
-        String filePath = getFilePath() + ".dat";
-        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
-            logic = (LogicImpl) in.readObject();
-            System.out.println("System state loaded successfully from " + filePath);
-            System.out.println(" " + filePath);
-        } catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error loading system state: " + e.getMessage());
+        if (!loadSystemStateHelper(fullPath)) {
+            System.out.println("Please try again: ");
+            loadSystemState();
+        }
+        System.out.println("System state loaded successfully from " + fullPath);
+
+    }
+
+    private boolean saveSystemStateHelper(String filePath) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filePath))) {
+            out.writeObject(logic);
+            return true;
+        } catch (IOException e) {
+            System.out.println("Error saving system state: " + e.getMessage());
+            return false;
         }
     }
 
+    private boolean loadSystemStateHelper(String filePath) {
 
-    private String getFilePath() {
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Please enter the full file path to load the system state (without extension):");
-        return scanner.nextLine();
+        try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(filePath))) {
+            logic = (LogicImpl) in.readObject();
+            return true;
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading system state: " + e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean isValidFileName(String fileName) {
+        String invalidChars = "[\\\\/:*?\"<>|]";
+        return !fileName.matches(".*" + invalidChars + ".*");
     }
 }
