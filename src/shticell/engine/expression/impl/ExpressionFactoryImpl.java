@@ -6,9 +6,11 @@ import shticell.engine.expression.impl.Operations.*;
 import shticell.engine.sheet.api.Sheet;
 import shticell.engine.sheet.cell.api.CellType;
 import shticell.engine.sheet.coordinate.Coordinate;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class ExpressionFactoryImpl implements ExpressionFactory {
+public class ExpressionFactoryImpl implements ExpressionFactory, Serializable {
 
     @Override
     public Expression createExpression(Sheet sheet, String operator, List<Expression> args) {

@@ -159,11 +159,13 @@ public class EffectiveValueImp implements EffectiveValue, Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) return true;
+        if (this == obj)
+            return true;
+        if(obj == null & this.value == null)
+            return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         EffectiveValueImp other = (EffectiveValueImp) obj;
-        return Objects.equals(cellType, other.cellType) &&
-                Objects.equals(value, other.value);
+        return Objects.equals(value, other.value);
     }
 
     @Override

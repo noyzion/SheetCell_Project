@@ -88,9 +88,6 @@ public class SheetDTO {
             outputString.append(colHeader).append("| ");
         }
         outputString.append("\n");
-        outputString.append(" ".repeat(3));
-        outputString.append("-".repeat(columnWidthUnits * columnSize + columnSize + 1)); // Adjust length for extra separator
-        outputString.append("\n");
         for (int row = 0; row < rowSize; row++) {
             String rowHeader = String.format("%02d | ", row + 1);
             outputString.append(rowHeader);
